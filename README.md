@@ -1,1 +1,1 @@
-# magento2-mondido
+# Mondido payment module for Magento 2

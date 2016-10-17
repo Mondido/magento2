@@ -1,0 +1,34 @@
+{
+    "name": "mondido/magento2-mondido",
+    "description": "Mondido payment module for Magento 2.",
+    "version": "1.0.0",
+    "type": "magento2-module",
+    "authors": [
+        {
+            "name": "Andreas Karlsson",
+            "email": "andreas@kodbruket.se",
+            "homepage": "https://kodbruket.se",
+            "role": "Developer"
+        },
+        {
+            "name": "Robert Lord",
+            "email": "robert@codepeak.se",
+            "homepage": "https://codepeak.se",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "7.0.2|7.0.4|~7.0.6",
+        "magento/module-sales": "100.0.*",
+        "magento/module-checkout": "100.0.*",
+        "magento/module-payment": "100.0.*",
+        "magento/framework": "100.0.*",
+        "magento/magento-composer-installer": "100.0.*"
+    },
+    "autoload": {
+        "files": ["registration.php"],
+        "psr-4": {
+            "Mondido\\Mondido\\": ""
+        }
+    }
+}
