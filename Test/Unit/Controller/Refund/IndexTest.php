@@ -13,7 +13,8 @@
 
 namespace Mondido\Mondido\Test\Unit\Controller\Refund;
 
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManager;
+use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
+use Magento\TestFramework\Request;
 
 /**
  * Refund action test
@@ -37,6 +38,11 @@ class IndexTest extends \PHPUnit_Framework_TestCase
     protected $objectManager;
 
     /**
+     * @var \Psr\Logger\LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * Set up
      *
      * @return void
@@ -49,16 +55,19 @@ class IndexTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $resultJsonFactory = $this->getMockBuilder('Magento\Framework\Controller\Result\JsonFactory')
+        $this->resultJsonFactory = $this->getMockBuilder('Magento\Framework\Controller\Result\JsonFactory')
             ->disableOriginalConstructor()
             ->setMethods(['create'])
             ->getMock();
 
-        $resultJsonFactory->expects($this->atLeastOnce())->method('create')->willReturn($this->resultJson);
+        $this->logger = $this->getMockBuilder('Psr\Logger\LoggerInterface')
+            ->disableOriginalConstructor()
+            ->setMethods(['debug'])
+            ->getMock();
 
         $this->object = $this->objectManager->getObject(
             'Mondido\Mondido\Controller\Refund\Index',
-            ['resultJsonFactory' => $resultJsonFactory]
+            ['resultJsonFactory' => $this->resultJsonFactory, 'logger' => $this->logger]
         );
     }
 
@@ -69,10 +78,13 @@ class IndexTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecute()
     {
-        $postData = ['variable'=>'value'];
+        $postData = ['variable' => 'value'];
 
+        $this->logger->expects($this->atLeastOnce())->method('debug');
+        $this->object->getRequest()->expects($this->once())->method('getPostValue');
         $this->resultJson->expects($this->once())->method('setData')->with($postData)->willReturnSelf();
-        
+        $this->resultJsonFactory->expects($this->atLeastOnce())->method('create')->willReturn($this->resultJson);
+
         $this->assertSame($this->resultJson, $this->object->execute());
     }
 

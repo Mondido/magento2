@@ -39,11 +39,13 @@ class Index extends \Magento\Framework\App\Action\Action
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
+        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
+        \Psr\Logger\LoggerInterface $logger
     ) {
         parent::__construct($context);
 
         $this->resultJsonFactory = $resultJsonFactory;
+        $this->logger = $logger;
     }
 
     /**
@@ -53,8 +55,13 @@ class Index extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        $resultJson = $this->resultJsonFactory->create();
+        $transaction = $this->getRequest()->getPostValue();
 
-        return $resultJson->setData(['variable'=>'value']);
+        $this->logger->debug($transaction);
+
+        $resultJson = $this->resultJsonFactory->create();
+        $resultJson->setData($transaction);
+
+        return $resultJson;
     }
 }
