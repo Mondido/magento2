@@ -2,8 +2,13 @@
 <ruleset name="Mondido_Mondido">
     <description>Mondido coding standards</description>
     <arg value="p"/>
+    <arg value="v"/>
     <arg name="colors"/>
     <rule ref="PSR2"/>
+    <rule ref="PEAR.Commenting.FileComment"/>
+    <rule ref="PEAR.Commenting.ClassComment"/>
+    <rule ref="PEAR.Commenting.FunctionComment"/>
+    <rule ref="PEAR.Commenting.InlineComment"/>
     <file>Block</file>
     <file>Controller</file>
     <file>Helper</file>
