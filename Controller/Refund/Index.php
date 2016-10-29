@@ -34,6 +34,7 @@ class Index extends \Magento\Framework\App\Action\Action
      *
      * @param \Magento\Framework\App\Action\Context            $context           Context object
      * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory Result factory
+     * @param \Psr\Logger\LoggerInterface                      $logger            Logger
      *
      * @return void
      */
