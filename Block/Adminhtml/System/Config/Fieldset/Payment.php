@@ -1,11 +1,45 @@
 <?php
+/**
+ * Mondido
+ *
+ * PHP version 5.6
+ *
+ * @category Mondido
+ * @package  Mondido_Mondido
+ * @author   Andreas Karlsson <andreas@kodbruket.se>
+ * @license  MIT License https://opensource.org/licenses/MIT
+ * @link     https://www.mondido.com
+ */
 
 namespace Mondido\Mondido\Block\Adminhtml\System\Config\Fieldset;
 
+/**
+ * Fieldset payment block
+ *
+ * @category Mondido
+ * @package  Mondido_Mondido
+ * @author   Andreas Karlsson <andreas@kodbruket.se>
+ * @license  MIT License https://opensource.org/licenses/MIT
+ * @link     https://www.mondido.com
+ */
 class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
+    /**
+     * @var \Magento\Config\Model\Config Backend config
+     */
     protected $_backendConfig;
 
+    /**
+     * Constructor
+     *
+     * @param \Magento\Backend\Block\Context      $context       Context
+     * @param \Magento\Backend\Model\Auth\Session $authSession   Auth session
+     * @param \Magento\Framework\View\Helper\Js   $jsHelper      Javascript helper
+     * @param \Magento\Backend\Block\Config       $backendConfig Backend config
+     * @param array                               $data          Data
+     *
+     * @return void
+     */
     public function __construct(
         \Magento\Backend\Block\Context $context,
         \Magento\Backend\Model\Auth\Session $authSession,
@@ -17,12 +51,26 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
         parent::__construct($context, $authSession, $jsHelper, $data);
     }
 
+    /**
+     * Get frontend class
+     *
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element Element
+     *
+     * @return string
+     */
     protected function _getFrontendClass($element)
     {
         $enabledString = $this->_isPaymentEnabled($element) ? ' enabled' : '';
         return parent::_getFrontendClass($element) . ' with-button' . $enabledString;
     }
 
+    /**
+     * Is payment enabled
+     *
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element Element
+     *
+     * @return bool
+     */
     protected function _isPaymentEnabled($element)
     {
         $groupConfig = $element->getGroup();
@@ -41,6 +89,13 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
         return $isPaymentEnabled;
     }
 
+    /**
+     * Get header title HTML
+     *
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element Element
+     *
+     * @return string
+     */
     protected function _getHeaderTitleHtml($element)
     {
         $html = '<div class="config-heading" ><div class="heading"><strong>' . $element->getLegend();
@@ -80,11 +135,25 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
         return $html;
     }
 
+    /**
+     * Get header comment HTML
+     *
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element Element
+     *
+     * @return string
+     */
     protected function _getHeaderCommentHtml($element)
     {
         return '';
     }
 
+    /**
+     * Is collapse state
+     *
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element Element
+     *
+     * @return bool
+     */
     protected function _isCollapseState($element)
     {
         return false;
