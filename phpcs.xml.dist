@@ -3,6 +3,7 @@
     <description>Mondido coding standards</description>
     <arg value="p"/>
     <arg value="v"/>
+    <arg value="n"/>
     <arg name="colors"/>
     <rule ref="PSR2"/>
     <rule ref="PEAR.Commenting.FileComment"/>
