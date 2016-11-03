@@ -28,7 +28,8 @@
         "magento/module-sales": "*",
         "magento/module-checkout": "*",
         "magento/module-payment": "*",
-        "magento/framework": "*"
+        "magento/framework": "*",
+        "magento/zendframework1": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8",
