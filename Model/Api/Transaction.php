@@ -55,10 +55,10 @@ class Transaction extends Mondido
         $hashRecipe = [
             'merchant_id' => $this->_config->getMerchantId(),
             'payment_ref' => $quote->getId(),
-            'customer_ref' => $quote->getCustomerId(),
-            'amount' => $quote->getBaseGrandTotal(),
-            'currency' => $quote->getBaseCurrencyCode(),
-            'test' => $this->_config->isTest(),
+            'customer_ref' => $quote->getCustomerId() ? $quote->getCustomerId() : '',
+            'amount' => number_format($quote->getBaseGrandTotal(), 2),
+            'currency' => strtolower($quote->getBaseCurrencyCode()),
+            'test' => $this->_config->isTest() ? 'test' : '',
             'secret' => $this->_config->getSecret()
         ];
 
@@ -80,18 +80,18 @@ class Transaction extends Mondido
 
         $data = [
             "merchant_id" => $this->_config->getMerchantId(),
-            "amount" => $quote->getBaseGrandTotal(),
-            "vat_amount" => "0",
+            "amount" => number_format($quote->getBaseGrandTotal(), 2),
+            "vat_amount" => number_format(0, 2),
             "payment_ref" => $quote->getId(),
-            "test" => $this->_config->isTest(),
+            'test' => $this->_config->isTest() ? 'true' : 'false',
             "metadata" => [],
-            "currency" => "sek",
-            "customer_ref" => $quote->getCustomerId(),
+            'currency' => strtolower($quote->getBaseCurrencyCode()),
+            "customer_ref" => $quote->getCustomerId() ? $quote->getCustomerId() : '',
             "hash" => $this->_createHash($quote),
             "process" => "false",
-            "success_url" => "",
-            "error_url" => "",
-            "authorize" => $quote->getPaymentAction(),
+            "success_url" => "https://kodbruket.se",
+            "error_url" => "https://google.se",
+            "authorize" => $quote->getPaymentAction() == 'authorize' ? 'true' : 'false',
             "Items" => []
         ];
 
