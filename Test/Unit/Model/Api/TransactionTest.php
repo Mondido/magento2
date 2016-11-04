@@ -48,6 +48,22 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $storeManagerMock = $this->getMockBuilder('Magento\Store\Model\StoreManagerInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $storeMock = $this->getMockBuilder('Magento\Store\Model\Store')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $storeManagerMock->expects($this->any())
+            ->method('getStore')
+            ->willReturn($storeMock);
+
+        $storeMock->expects($this->any())
+            ->method('getUrl')
+            ->willReturn('https://kodbruket.se/');
+
         $curlMock->expects($this->any())
             ->method('addOption')
             ->will($this->returnSelf());
@@ -66,7 +82,7 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
 
         $this->object = $objectManager->getObject(
             '\Mondido\Mondido\Model\Api\Transaction',
-            ['adapter' => $curlMock, 'config' => $configModelMock]
+            ['adapter' => $curlMock, 'config' => $configModelMock, 'storeManager' => $storeManagerMock]
         );
     }
 
@@ -79,11 +95,31 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
     {
         $quoteModelMock = $this->getMock(
             'Magento\Quote\Model\Quote',
-            ['getItemsCount', 'getItemsQty', '__wakeup'],
+            ['getItemsCount', 'getItemsQty', '__wakeup', 'getAllVisibleItems'],
             [],
             '',
             false
         );
+
+        $quoteItemMock = $this->getMockBuilder('Magento\Quote\Model\Quote\Item')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $quoteModelMock->expects($this->once())
+            ->method('getAllVisibleItems')
+            ->willReturn([$quoteItemMock]);
+
+        $quoteItemMock->expects($this->once())
+            ->method('getSku')
+            ->willReturn('sku');
+
+        $quoteItemMock->expects($this->once())
+            ->method('getName')
+            ->willReturn('name');
+
+        $quoteItemMock->expects($this->once())
+            ->method('getQty')
+            ->willReturn(1);
 
         $this->object->create($quoteModelMock);
     }
