@@ -51,11 +51,17 @@ class CheckoutPredispatchObserver implements ObserverInterface
     {
         $quote = $observer->getEvent()->getControllerAction()->getOnepage()->getQuote();
 
-        if ($quote->getId()) {
+        if ($quote->getId() && !$quote->getMondidoTransaction()) {
             $response = $this->transaction->create($quote);
 
             $quote->setMondidoTransaction($response);
             $quote->save();
         }
+
+        $shippingAddress = $quote->getShippingAddress('shipping')->setCountryId('SE')->save();
+        $shippingAddress->setCollectShippingRates(true)
+            ->collectShippingRates()
+            ->setShippingMethod('flatrate_flatrate');
+        $quote->collectTotals()->save();
     }
 }
