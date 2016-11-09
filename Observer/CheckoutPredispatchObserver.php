@@ -51,8 +51,12 @@ class CheckoutPredispatchObserver implements ObserverInterface
     {
         $quote = $observer->getEvent()->getControllerAction()->getOnepage()->getQuote();
 
-        if ($quote->getId() && !$quote->getMondidoTransaction()) {
-            $response = $this->transaction->create($quote);
+        if ($quote->getId()) {
+            if (!$quote->getMondidoTransaction()) {
+                $response = $this->transaction->create($quote);
+            } else {
+                $response = $this->transaction->update($quote);
+            }
 
             $quote->setMondidoTransaction($response);
             $quote->save();

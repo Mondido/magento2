@@ -155,6 +155,54 @@ class Transaction extends Mondido
     }
 
     /**
+     * Update transaction
+     *
+     * @param Magento\Quote\Model\Quote $quote A quote object
+     *
+     * @return string
+     */
+    public function update(\Magento\Quote\Model\Quote $quote)
+    {
+        $method = 'PUT';
+
+        $webhooks = [];
+
+        $webhooks[] = [
+            'url' => $this->_storeManager->getStore()->getUrl('mondido/payment'),
+            'trigger' => 'payment',
+            'http_method' => 'post',
+            'data_format' => 'json'
+        ];
+
+        $quoteItems = $quote->getAllVisibleItems();
+        $transactionItems = [];
+
+        foreach ($quoteItems as $item) {
+            $transactionItems[] = [
+                'artno' => $item->getSku(),
+                'description' => $item->getName(),
+                'qty' => $item->getQty(),
+                'amount' => $item->getBaseRowTotal(),
+                'vat' => $item->getBaseTaxAmount(),
+                'discount' => $item->getBaseDiscountAmount()
+            ];
+        }
+
+        $data = [
+            "amount" => number_format($quote->getBaseGrandTotal(), 2),
+            "vat_amount" => number_format(0, 2),
+            "metadata" => [],
+            "currency" => strtolower($quote->getBaseCurrencyCode()),
+            "customer_ref" => $quote->getCustomerId() ? $quote->getCustomerId() : '',
+            "hash" => $this->_createHash($quote),
+            "items" => json_encode($transactionItems),
+            "webhook" => json_encode($webhooks)
+        ];
+
+        return $this->call($method, $this->resource, $id, $data);
+    }
+
+    /**
      * Capture transaction
      *
      * @return string
