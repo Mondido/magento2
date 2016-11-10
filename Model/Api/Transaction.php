@@ -133,6 +133,22 @@ class Transaction extends Mondido
             ];
         }
 
+        $shippingAddress = $quote->getShippingAddress('shipping');
+
+        $countryCodes = ['SE' => 'SWE'];
+
+        $paymentDetails = [
+            'email' => $shippingAddress->getEmail(),
+            'phone' => $shippingAddress->getTelephone(),
+            'first_name' => $shippingAddress->getFirstname(),
+            'last_name' => $shippingAddress->getLastname(),
+            'zip' => $shippingAddress->getPostcode(),
+            'address_1' => $shippingAddress->getStreet(),
+            'address_2' => '',
+            'city' => $shippingAddress->getCity(),
+            'country_code' => $countryCodes[$shippingAddress->getCountryId()]
+        ];
+
         $data = [
             "merchant_id" => $this->_config->getMerchantId(),
             "amount" => number_format($quote->getBaseGrandTotal(), 2),
@@ -148,7 +164,8 @@ class Transaction extends Mondido
             "error_url" => "https://google.se",
             "authorize" => $quote->getPaymentAction() == 'authorize' ? 'true' : 'false',
             "items" => json_encode($transactionItems),
-            "webhooks" => json_encode($webhooks)
+            "webhooks" => json_encode($webhooks),
+            "payment_details" => $paymentDetails
         ];
 
         return $this->call($method, $this->resource, null, $data);
@@ -196,10 +213,19 @@ class Transaction extends Mondido
             "customer_ref" => $quote->getCustomerId() ? $quote->getCustomerId() : '',
             "hash" => $this->_createHash($quote),
             "items" => json_encode($transactionItems),
-            "webhook" => json_encode($webhooks)
+            "webhook" => json_encode($webhooks),
+            "process" => "false",
+            "card_expiry" => "1217",
+            "card_cvv" => "200",
+            "card_number" => "41111111111111",
+            "card_holder" => "John Doe",
+            "card_type" => "VISA"
         ];
 
-        return $this->call($method, $this->resource, $id, $data);
+        $transaction = json_decode($quote->getMondidoTransaction());
+        $id = $transaction->id;
+
+        return $this->call($method, $this->resource, (string) $id, $data);
     }
 
     /**
