@@ -31,6 +31,13 @@ class Index extends \Magento\Checkout\Controller\Onepage
      */
     public function execute()
     {
+        $configModel = $this->_objectManager->get('Mondido\Mondido\Model\Config');
+
+        if (!$configModel->isActive()) {
+            $this->messageManager->addError(__('Mondido checkout is turned off.'));
+            return $this->resultRedirectFactory->create()->setPath('checkout/cart');
+        }
+
         $checkoutHelper = $this->_objectManager->get('Magento\Checkout\Helper\Data');
 
         $quote = $this->getOnepage()->getQuote();
