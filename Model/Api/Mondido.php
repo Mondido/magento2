@@ -41,7 +41,7 @@ abstract class Mondido
         $url = 'https://api.mondido.com/v1/' . $resource;
 
         if (is_string($params)) {
-            $url .= "/$value";
+            $url .= "/$params";
         } else if (is_array($params)) {
             foreach ($params as $key => $value) {
                 if (is_numeric($key)) {
