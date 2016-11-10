@@ -3,13 +3,17 @@ define(
         'ko',
         'uiComponent',
         'underscore',
-        'Magento_Checkout/js/model/step-navigator'
+        'Magento_Checkout/js/model/step-navigator',
+        'Magento_Checkout/js/action/select-shipping-method',
+        'Magento_Checkout/js/checkout-data'
     ],
     function (
         ko,
         Component,
         _,
-        stepNavigator
+        stepNavigator,
+        selectShippingMethodAction,
+        checkoutData
     ) {
         return Component.extend({
             defaults: {
@@ -19,6 +23,10 @@ define(
             transaction: ko.observable(JSON.parse(window.checkoutConfig.quoteData.mondido_transaction).href),
             initialize: function () {
                 this._super();
+
+                var shippingMethod = {'carrier_code': 'flatrate', 'method_code': 'flatrate', 'carrier_title': 'Flat rate', 'method_title': 'Fixed'};
+                selectShippingMethodAction(shippingMethod);
+                checkoutData.setSelectedShippingRate(shippingMethod['carrier_code'] + '_' + shippingMethod['method_code']);
 
                 stepNavigator.registerStep(
                     'mondido',
