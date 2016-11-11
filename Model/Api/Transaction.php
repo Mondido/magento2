@@ -120,6 +120,7 @@ class Transaction extends Mondido
         ];
 
         $quoteItems = $quote->getAllVisibleItems();
+
         $transactionItems = [];
 
         foreach ($quoteItems as $item) {
@@ -134,6 +135,15 @@ class Transaction extends Mondido
         }
 
         $shippingAddress = $quote->getShippingAddress('shipping');
+
+        $transactionItems[] = [
+            'artno' => $shippingAddress->getShippingMethod(),
+            'description' => $shippingAddress->getShippingDescription(),
+            'qty' => 1,
+            'amount' => $shippingAddress->getBaseShippingAmount(),
+            'vat' => $shippingAddress->getBaseShippingTaxAmount(),
+            'discount' => $shippingAddress->getBaseDiscountAmount()
+        ];
 
         $countryCodes = ['SE' => 'SWE'];
 
@@ -157,7 +167,7 @@ class Transaction extends Mondido
         $data = [
             "merchant_id" => $this->_config->getMerchantId(),
             "amount" => number_format($quote->getBaseGrandTotal(), 2),
-            "vat_amount" => number_format(0, 2),
+            "vat_amount" => number_format($shippingAddress->getBaseTaxAmount(), 2),
             "payment_ref" => $quote->getId(),
             'test' => $this->_config->isTest() ? 'true' : 'false',
             "metadata" => $metaData,
