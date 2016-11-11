@@ -53,6 +53,6 @@ class Sidebar
             return $result;
         }
 
-        return $subject->getUrl('mondido/checkout');
+        return $this->urlBuilder->getUrl('mondido/checkout');
     }
 }
