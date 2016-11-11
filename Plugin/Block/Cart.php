@@ -13,6 +13,9 @@
 
 namespace Mondido\Mondido\Plugin\Block;
 
+use Magento\Framework\UrlInterface;
+use Mondido\Mondido\Model\Config;
+
 /**
  * Cart block plugin
  *

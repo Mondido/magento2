@@ -13,6 +13,9 @@
 
 namespace Mondido\Mondido\Plugin\Block\Onepage;
 
+use Magento\Framework\UrlInterface;
+use Mondido\Mondido\Model\Config;
+
 /**
  * Onepage link block plugin
  *
