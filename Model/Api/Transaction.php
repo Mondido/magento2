@@ -143,10 +143,15 @@ class Transaction extends Mondido
             'first_name' => $shippingAddress->getFirstname(),
             'last_name' => $shippingAddress->getLastname(),
             'zip' => $shippingAddress->getPostcode(),
-            'address_1' => $shippingAddress->getStreet(),
-            'address_2' => '',
+            'address_1' => $shippingAddress->getStreetLine(0),
+            'address_2' => $shippingAddress->getStreetLine(1),
             'city' => $shippingAddress->getCity(),
             'country_code' => $countryCodes[$shippingAddress->getCountryId()]
+        ];
+
+        $metaData = [
+            'user' => $paymentDetails,
+            'products' => $transactionItems
         ];
 
         $data = [
@@ -155,7 +160,7 @@ class Transaction extends Mondido
             "vat_amount" => number_format(0, 2),
             "payment_ref" => $quote->getId(),
             'test' => $this->_config->isTest() ? 'true' : 'false',
-            "metadata" => [],
+            "metadata" => $metaData,
             'currency' => strtolower($quote->getBaseCurrencyCode()),
             "customer_ref" => $quote->getCustomerId() ? $quote->getCustomerId() : '',
             "hash" => $this->_createHash($quote),
@@ -176,10 +181,18 @@ class Transaction extends Mondido
      *
      * @param Magento\Quote\Model\Quote $quote A quote object
      *
-     * @return string
+     * @return string|boolean
      */
     public function update(\Magento\Quote\Model\Quote $quote)
     {
+        $transaction = json_decode($quote->getMondidoTransaction());
+
+        if (property_exists($transaction, 'id')) {
+            $id = $transaction->id;
+        } else {
+            return false;
+        }
+
         $method = 'PUT';
 
         $webhooks = [];
@@ -221,9 +234,6 @@ class Transaction extends Mondido
             "card_holder" => "John Doe",
             "card_type" => "VISA"
         ];
-
-        $transaction = json_decode($quote->getMondidoTransaction());
-        $id = $transaction->id;
 
         return $this->call($method, $this->resource, (string) $id, $data);
     }

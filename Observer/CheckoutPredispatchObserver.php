@@ -51,11 +51,18 @@ class CheckoutPredispatchObserver implements ObserverInterface
     {
         $quote = $observer->getEvent()->getControllerAction()->getOnepage()->getQuote();
 
-        $shippingAddress = $quote->getShippingAddress('shipping')->setCountryId('SE')->save();
-        $shippingAddress->setCollectShippingRates(true)
-            ->collectShippingRates()
-            ->setShippingMethod('flatrate_flatrate');
-        $quote->collectTotals()->save();
+        $shippingAddress = $quote->getShippingAddress('shipping');
+
+        if (!$shippingAddress->getCountryId()) {
+            $shippingAddress->setCountryId('SE')->save();
+        }
+
+        if (!$shippingAddress->getShippingMethod()) {
+            $shippingAddress->setCollectShippingRates(true)
+                ->collectShippingRates()
+                ->setShippingMethod('flatrate_flatrate');
+            $quote->collectTotals()->save();
+        }
 
         if ($quote->getId()) {
             if (!$quote->getMondidoTransaction()) {
@@ -64,13 +71,15 @@ class CheckoutPredispatchObserver implements ObserverInterface
                 $response = $this->transaction->update($quote);
             }
 
-            $data = json_decode($response);
+            if ($response) {
+                $data = json_decode($response);
 
-            if (isset($data->id)) {
-                $quote->setMondidoTransaction($response);
-                $quote->save();
-            } else {
-                // Log $data->description;
+                if (property_exists($data, 'id')) {
+                    $quote->setMondidoTransaction($response);
+                    $quote->save();
+                } else {
+                    // Log $data->description;
+                }
             }
         }
     }
