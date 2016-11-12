@@ -11,10 +11,14 @@
  * @link     https://www.mondido.com
  */
 
-namespace Mondido\Mondido\Controller\Checkout;
+namespace Mondido\Mondido\Controller\Payment;
+
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Psr\Log\LoggerInterface;
 
 /**
- * Checkout action
+ * Payment action
  *
  * @category Mondido
  * @package  Mondido_Mondido
@@ -22,8 +26,35 @@ namespace Mondido\Mondido\Controller\Checkout;
  * @license  MIT License https://opensource.org/licenses/MIT
  * @link     https://www.mondido.com
  */
-class Index extends \Magento\Checkout\Controller\Onepage
+class Index extends \Magento\Framework\App\Action\Action
 {
+    /**
+     * @var \Magento\Framework\Controller\Result\JsonFactory
+     */
+    protected $resultJsonFactory;
+
+    /**
+     * @var \Psr\Log\LoggerInterface
+     */
+    protected $logger;
+
+    /**
+     * Constructor
+     *
+     * @param \Magento\Framework\App\Action\Context            $context           Context object
+     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory Result factory
+     * @param \Psr\Log\LoggerInterface                         $logger            Logger interface
+     *
+     * @return void
+     */
+    public function __construct(Context $context, JsonFactory $resultJsonFactory, LoggerInterface $logger)
+    {
+        parent::__construct($context);
+
+        $this->resultJsonFactory = $resultJsonFactory;
+        $this->logger = $logger;
+    }
+
     /**
      * Execute
      *
@@ -31,30 +62,14 @@ class Index extends \Magento\Checkout\Controller\Onepage
      */
     public function execute()
     {
-        $configModel = $this->_objectManager->get('Mondido\Mondido\Model\Config');
+        $data = $this->getRequest()->getPostValue();
+        $this->logger->debug($data);
 
-        if (!$configModel->isActive()) {
-            $this->messageManager->addError(__('Mondido checkout is turned off.'));
-            return $this->resultRedirectFactory->create()->setPath('checkout/cart');
-        }
+        $response = json_encode(['code' => 200]);
 
-        $checkoutHelper = $this->_objectManager->get('Magento\Checkout\Helper\Data');
+        $resultJson = $this->resultJsonFactory->create();
+        $resultJson->setData($response);
 
-        $quote = $this->getOnepage()->getQuote();
-        if (!$quote->hasItems() || $quote->getHasError() || !$quote->validateMinimumAmount()) {
-            return $this->resultRedirectFactory->create()->setPath('checkout/cart');
-        }
-
-        if (!$this->_customerSession->isLoggedIn() && !$checkoutHelper->isAllowedGuestCheckout($quote)) {
-            $this->messageManager->addError(__('Guest checkout is disabled.'));
-            return $this->resultRedirectFactory->create()->setPath('checkout/cart');
-        }
-
-        $this->_customerSession->regenerateId();
-        $this->_objectManager->get('Magento\Checkout\Model\Session')->setCartWasUpdated(false);
-        $this->getOnepage()->initCheckout();
-        $resultPage = $this->resultPageFactory->create();
-        $resultPage->getConfig()->getTitle()->set(__('Checkout'));
-        return $resultPage;
+        return $resultJson;
     }
 }
