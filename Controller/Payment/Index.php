@@ -13,6 +13,10 @@
 
 namespace Mondido\Mondido\Controller\Payment;
 
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Psr\Log\LoggerInterface;
+
 /**
  * Payment action
  *
@@ -30,20 +34,25 @@ class Index extends \Magento\Framework\App\Action\Action
     protected $resultJsonFactory;
 
     /**
+     * @var \Psr\Log\LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * Constructor
      *
      * @param \Magento\Framework\App\Action\Context            $context           Context object
      * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory Result factory
+     * @param \Psr\Log\LoggerInterface                         $logger            Logger interface
      *
      * @return void
      */
-    public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
-    ) {
+    public function __construct(Context $context, JsonFactory $resultJsonFactory, LoggerInterface $logger)
+    {
         parent::__construct($context);
 
         $this->resultJsonFactory = $resultJsonFactory;
+        $this->logger = $logger;
     }
 
     /**
@@ -53,5 +62,14 @@ class Index extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
+        $data = $this->getRequest()->getPostValue();
+        $this->logger->debug($data);
+
+        $response = json_encode(['code' => 200]);
+
+        $resultJson = $this->resultJsonFactory->create();
+        $resultJson->setData($response);
+
+        return $resultJson;
     }
 }
