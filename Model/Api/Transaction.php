@@ -13,6 +13,8 @@
 
 namespace Mondido\Mondido\Model\Api;
 
+use Magento\Framework\UrlInterface;
+
 /**
  * Mondido transaction API model
  *
@@ -27,6 +29,7 @@ class Transaction extends Mondido
     public $resource = 'transactions';
     protected $_config = 'config';
     protected $_storeManager;
+    protected $urlBuilder;
 
     /**
      * Constructor
@@ -34,17 +37,20 @@ class Transaction extends Mondido
      * @param \Magento\Framework\HTTP\Adapter\Curl       $adapter      HTTP adapter
      * @param \Mondido\Mondido\Model\Config              $config       Config object
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager Store manager
+     * @param \Magento\Framework\UrlInterface            $urlBuilder   URL builder
      *
      * @return void
      */
     public function __construct(
         \Magento\Framework\HTTP\Adapter\Curl $adapter,
         \Mondido\Mondido\Model\Config $config,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        UrlInterface $urlBuilder
     ) {
         $this->_adapter = $adapter;
         $this->_config = $config;
         $this->_storeManager = $storeManager;
+        $this->urlBuilder = $urlBuilder;
     }
 
     /**
@@ -82,39 +88,9 @@ class Transaction extends Mondido
     {
         $method = 'POST';
 
-        $webhooks = [];
-
-        $webhooks[] = [
+        $webhook = [
             'url' => $this->_storeManager->getStore()->getUrl('mondido/payment'),
             'trigger' => 'payment',
-            'http_method' => 'post',
-            'data_format' => 'json'
-        ];
-
-        $webhooks[] = [
-            'url' => $this->_storeManager->getStore()->getUrl('mondido/payment/success'),
-            'trigger' => 'payment_success',
-            'http_method' => 'post',
-            'data_format' => 'json'
-        ];
-
-        $webhooks[] = [
-            'url' => $this->_storeManager->getStore()->getUrl('mondido/payment/error'),
-            'trigger' => 'payment_error',
-            'http_method' => 'post',
-            'data_format' => 'json'
-        ];
-
-        $webhooks[] = [
-            'url' => $this->_storeManager->getStore()->getUrl('mondido/payment/form'),
-            'trigger' => 'payment_form',
-            'http_method' => 'post',
-            'data_format' => 'json'
-        ];
-
-        $webhooks[] = [
-            'url' => $this->_storeManager->getStore()->getUrl('mondido/refund'),
-            'trigger' => 'refund',
             'http_method' => 'post',
             'data_format' => 'json'
         ];
@@ -175,11 +151,11 @@ class Transaction extends Mondido
             "customer_ref" => $quote->getCustomerId() ? $quote->getCustomerId() : '',
             "hash" => $this->_createHash($quote),
             "process" => "false",
-            "success_url" => "https://kodbruket.se",
-            "error_url" => "https://google.se",
+            "success_url" => $this->urlBuilder->getUrl('mondido/checkout/redirect'),
+            "error_url" => $this->urlBuilder->getUrl('mondido/checkout/error'),
             "authorize" => $quote->getPaymentAction() == 'authorize' ? 'true' : 'false',
             "items" => json_encode($transactionItems),
-            "webhooks" => json_encode($webhooks),
+            "webhook" => json_encode($webhook),
             "payment_details" => $paymentDetails
         ];
 
