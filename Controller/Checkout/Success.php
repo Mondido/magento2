@@ -25,18 +25,6 @@ namespace Mondido\Mondido\Controller\Checkout;
 class Success extends \Mondido\Mondido\Controller\Checkout\Index
 {
     /**
-     * Constructor
-     *
-     * @param \Magento\Framework\App\Action\Context $context Context object
-     *
-     * @return void
-     */
-    /*public function __construct(\Magento\Framework\App\Action\Context $context)
-    {
-        parent::__construct($context);
-    }*/
-
-    /**
      * Execute
      *
      * @return \Magento\Framework\Controller\ResultInterface
@@ -45,19 +33,21 @@ class Success extends \Mondido\Mondido\Controller\Checkout\Index
     {
         $session = $this->getOnepage()->getCheckout();
 
-        if (!$this->_objectManager->get('Magento\Checkout\Model\Session\SuccessValidator')->isValid()) {
+        if (!$this->_objectManager->get('Mondido\Mondido\Model\Session\SuccessValidator')->isValid()) {
             return $this->resultRedirectFactory->create()->setPath('checkout/cart');
         }
 
-        // $session->clearQuote();
+        $session->clearQuote();
         // @todo: Refactor it to match CQRS
         $resultPage = $this->resultPageFactory->create();
+
         /*
         $this->_eventManager->dispatch(
             'checkout_onepage_controller_success_action',
             ['order_ids' => [$session->getLastOrderId()]]
         );
         */
+
         return $resultPage;
     }
 }
