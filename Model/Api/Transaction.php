@@ -92,7 +92,7 @@ class Transaction extends Mondido
             'url' => $this->_storeManager->getStore()->getUrl('mondido/payment'),
             'trigger' => 'payment',
             'http_method' => 'post',
-            'data_format' => 'json'
+            'data_format' => 'form_data'
         ];
 
         $quoteItems = $quote->getAllVisibleItems();
@@ -181,13 +181,11 @@ class Transaction extends Mondido
 
         $method = 'PUT';
 
-        $webhooks = [];
-
-        $webhooks[] = [
+        $webhook = [
             'url' => $this->_storeManager->getStore()->getUrl('mondido/payment'),
             'trigger' => 'payment',
             'http_method' => 'post',
-            'data_format' => 'json'
+            'data_format' => 'form_data'
         ];
 
         $quoteItems = $quote->getAllVisibleItems();
@@ -212,7 +210,7 @@ class Transaction extends Mondido
             "customer_ref" => $quote->getCustomerId() ? $quote->getCustomerId() : '',
             "hash" => $this->_createHash($quote),
             "items" => json_encode($transactionItems),
-            "webhook" => json_encode($webhooks),
+            "webhook" => json_encode($webhook),
             "process" => "false",
             "card_expiry" => "1217",
             "card_cvv" => "200",
