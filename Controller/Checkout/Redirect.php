@@ -13,9 +13,6 @@
 
 namespace Mondido\Mondido\Controller\Checkout;
 
-use Magento\Framework\App\Action\Context;
-use Magento\Framework\View\Result\PageFactory;
-
 /**
  * Redirect action
  *
@@ -25,16 +22,8 @@ use Magento\Framework\View\Result\PageFactory;
  * @license  MIT License https://opensource.org/licenses/MIT
  * @link     https://www.mondido.com
  */
-class Redirect extends \Magento\Framework\App\Action\Action
+class Redirect extends \Magento\Checkout\Controller\Onepage
 {
-    /** @var \Magento\Framework\View\Result\PageFactory */
-    protected $resultPageFactory;
-
-    public function __construct(Context $context, PageFactory $resultPageFactory) {
-        $this->resultPageFactory = $resultPageFactory;
-        parent::__construct($context);
-    }
-
     /**
      * Execute
      *
@@ -42,6 +31,20 @@ class Redirect extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
+        // Get session
+        $session = $this->getOnepage()->getCheckout();
+
+        // Get quote
+        $quote = $this->getOnepage()->getQuote();
+
+        $reservedOrderId = $quote->reserveOrderId()->setIsActive(0)->save();
+        $quoteId = $quote->getId();
+
+        $session->setLastQuoteId($quoteId)
+            ->setLastSuccessQuoteId($quoteId)
+            ->clearHelperData()
+            ->setLastRealOrderId($reservedOrderId);
+
         $url = $this->_url->getUrl('mondido/checkout/success');
         echo '<!doctype html>
 <html>

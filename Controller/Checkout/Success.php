@@ -22,7 +22,7 @@ namespace Mondido\Mondido\Controller\Checkout;
  * @license  MIT License https://opensource.org/licenses/MIT
  * @link     https://www.mondido.com
  */
-class Success extends \Magento\Framework\App\Action\Action
+class Success extends \Mondido\Mondido\Controller\Checkout\Index
 {
     /**
      * Constructor
@@ -31,19 +31,33 @@ class Success extends \Magento\Framework\App\Action\Action
      *
      * @return void
      */
-    public function __construct(\Magento\Framework\App\Action\Context $context)
+    /*public function __construct(\Magento\Framework\App\Action\Context $context)
     {
         parent::__construct($context);
-    }
+    }*/
 
     /**
      * Execute
      *
-     * @return void
+     * @return \Magento\Framework\Controller\ResultInterface
      */
     public function execute()
     {
-        echo 'Success';
-        die();
+        $session = $this->getOnepage()->getCheckout();
+
+        if (!$this->_objectManager->get('Magento\Checkout\Model\Session\SuccessValidator')->isValid()) {
+            return $this->resultRedirectFactory->create()->setPath('checkout/cart');
+        }
+
+        // $session->clearQuote();
+        // @todo: Refactor it to match CQRS
+        $resultPage = $this->resultPageFactory->create();
+        /*
+        $this->_eventManager->dispatch(
+            'checkout_onepage_controller_success_action',
+            ['order_ids' => [$session->getLastOrderId()]]
+        );
+        */
+        return $resultPage;
     }
 }
