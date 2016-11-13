@@ -13,7 +13,8 @@
 
 namespace Mondido\Mondido\Controller\Checkout;
 
-use Magento\Framework\UrlInterface;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\View\Result\PageFactory;
 
 /**
  * Redirect action
@@ -29,16 +30,8 @@ class Redirect extends \Magento\Framework\App\Action\Action
     /** @var \Magento\Framework\View\Result\PageFactory */
     protected $resultPageFactory;
 
-    /** @var \Magento\Framework\UrlInterface */
-    protected $urlBuilder;
-
-    public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        UrlInterface $urlBuilder
-    ) {
+    public function __construct(Context $context, PageFactory $resultPageFactory) {
         $this->resultPageFactory = $resultPageFactory;
-        $this->urlBuilder = $urlBuilder;
         parent::__construct($context);
     }
 
@@ -49,7 +42,7 @@ class Redirect extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        $url = $this->urlBuilder->getUrl('mondido/checkout/success');
+        $url = $this->_url->getUrl('mondido/checkout/success');
         echo '<!doctype html>
 <html>
 <head>
