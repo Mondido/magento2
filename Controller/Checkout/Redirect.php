@@ -13,6 +13,8 @@
 
 namespace Mondido\Mondido\Controller\Checkout;
 
+use Magento\Framework\UrlInterface;
+
 /**
  * Redirect action
  *
@@ -24,15 +26,19 @@ namespace Mondido\Mondido\Controller\Checkout;
  */
 class Redirect extends \Magento\Framework\App\Action\Action
 {
-    /**
-     * Constructor
-     *
-     * @param \Magento\Framework\App\Action\Context $context Context object
-     *
-     * @return void
-     */
-    public function __construct(\Magento\Framework\App\Action\Context $context)
-    {
+    /** @var \Magento\Framework\View\Result\PageFactory */
+    protected $resultPageFactory;
+
+    /** @var \Magento\Framework\UrlInterface */
+    protected $urlBuilder;
+
+    public function __construct(
+        \Magento\Framework\App\Action\Context $context,
+        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
+        UrlInterface $urlBuilder
+    ) {
+        $this->resultPageFactory = $resultPageFactory;
+        $this->urlBuilder = $urlBuilder;
         parent::__construct($context);
     }
 
@@ -43,7 +49,21 @@ class Redirect extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        echo 'Redirect';
-        die();
+        $url = $this->urlBuilder->getUrl('mondido/checkout/success');
+        echo '<!doctype html>
+<html>
+<head>
+<script>
+    var isInIframe = (window.location != window.parent.location) ? true : false;
+    if (isInIframe == true) {
+        window.top.location.href = "'.$url.'";
+    } else {
+        window.location.href = "'.$url.'";
+    }
+</script>
+</head>
+<body></body>
+</html>';
+        die;
     }
 }
