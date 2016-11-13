@@ -36,14 +36,16 @@ class Redirect extends \Magento\Checkout\Controller\Onepage
 
         // Get quote
         $quote = $this->getOnepage()->getQuote();
+        $quote->reserveOrderId()->setIsActive(0)->save();
 
-        $reservedOrderId = $quote->reserveOrderId()->setIsActive(0)->save();
+        $reservedOrderId = $quote->getReservedOrderId();
         $quoteId = $quote->getId();
 
         $session->setLastQuoteId($quoteId)
             ->setLastSuccessQuoteId($quoteId)
-            ->clearHelperData()
-            ->setLastRealOrderId($reservedOrderId);
+            ->clearHelperData();
+
+        $session->setLastRealOrderId($reservedOrderId);
 
         $url = $this->_url->getUrl('mondido/checkout/success');
         echo '<!doctype html>
