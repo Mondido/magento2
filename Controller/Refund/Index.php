@@ -34,14 +34,14 @@ class Index extends \Magento\Framework\App\Action\Action
      *
      * @param \Magento\Framework\App\Action\Context            $context           Context object
      * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory Result factory
-     * @param \Psr\Logger\LoggerInterface                      $logger            Logger
+     * @param \Psr\Log\LoggerInterface                         $logger            Logger
      *
      * @return void
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-        \Psr\Logger\LoggerInterface $logger
+        \Psr\Log\LoggerInterface $logger
     ) {
         parent::__construct($context);
 
