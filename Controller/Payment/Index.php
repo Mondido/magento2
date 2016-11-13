@@ -63,7 +63,7 @@ class Index extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $data = $this->getRequest()->getPostValue();
-        $this->logger->debug($data);
+        $this->logger->debug(var_export($data, true));
 
         $response = json_encode(['code' => 200]);
 
