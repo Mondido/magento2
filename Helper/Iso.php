@@ -30,7 +30,7 @@ class Iso extends \Magento\Framework\App\Helper\AbstractHelper
      * This function will convert a ISO 3166-1 alpha-2 code to ISO 3166-1 alpha-3
      * or vice versa.
      *
-     * @param $isoCode
+     * @param string $isoCode alpha-2 or alpha-3 ISO code
      *
      * @return string
      * @throws \Exception
@@ -43,15 +43,17 @@ class Iso extends \Magento\Framework\App\Helper\AbstractHelper
             return $this->convertFromAlpha3($isoCode);
         }
 
-        throw new \Exception('Given data should either be ISO 3166-1 alpha-2 or alpha-3');
+        throw new \Exception(
+            'Given data should either be ISO 3166-1 alpha-2 or alpha-3'
+        );
     }
 
     /**
      * Convert from alpha-2 to alpha-3
      *
-     * @param $isoAlpha2
+     * @param string $isoAlpha2 ISO-3166-1 alpha-2 code
      *
-     * @return mixed
+     * @return string
      * @throws \Exception
      */
     public function convertFromAlpha2($isoAlpha2)
@@ -64,15 +66,17 @@ class Iso extends \Magento\Framework\App\Helper\AbstractHelper
             }
         }
 
-        throw new \Exception('Unable to find ISO 3166-1 alpha 2 key "' . $isoAlpha2 . '"');
+        throw new \Exception(
+            'Unable to find ISO 3166-1 alpha 2 key "' . $isoAlpha2 . '"'
+        );
     }
 
     /**
      * Convert from alpha-3 to alpha-2
      *
-     * @param $isoAlpha2
+     * @param string $isoAlpha3 ISO-3166-1 alpha-3 code
      *
-     * @return mixed
+     * @return string
      * @throws \Exception
      */
     public function convertFromAlpha3($isoAlpha3)
@@ -85,7 +89,9 @@ class Iso extends \Magento\Framework\App\Helper\AbstractHelper
             }
         }
 
-        throw new \Exception('Unable to find ISO 3166-1 alpha 2 key "' . $isoAlpha2 . '"');
+        throw new \Exception(
+            'Unable to find ISO 3166-1 alpha 2 key "' . $isoAlpha3 . '"'
+        );
     }
 
     /**
