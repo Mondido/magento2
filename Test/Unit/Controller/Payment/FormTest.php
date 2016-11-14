@@ -44,7 +44,9 @@ class FormTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->objectManager = new ObjectManager($this);
-        $this->object = $this->objectManager->getObject('Mondido\Mondido\Controller\Payment\Form');
+        $this->object = $this->objectManager->getObject(
+            'Mondido\Mondido\Controller\Payment\Form'
+        );
     }
 
     /**

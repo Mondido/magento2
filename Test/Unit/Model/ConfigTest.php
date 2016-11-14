@@ -37,7 +37,11 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $objectManager = new ObjectManager($this);
 
-        $this->scopeConfigMock = $this->getMockBuilder('Magento\Framework\App\Config\ScopeConfigInterface')
+        $this->scopeConfigMock = $this->getMockBuilder(
+            'Magento\Framework\App\Config\ScopeConfigInterface'
+        );
+
+        $this->scopeConfigMock
             ->disableOriginalConstructor()
             ->getMock();
 
