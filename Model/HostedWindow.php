@@ -77,6 +77,107 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
     protected $_canUseCheckout = true;
 
     /**
+     * Authorize
+     *
+     * @param \Magento\Framework\DataObject|InfoInterface $payment Payment
+     * @param float $amount                                        Amount
+     *
+     * @return $this
+     */
+    public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    {
+        return $this;
+    }
+
+    /**
+     * Order payment
+     *
+     * @param \Magento\Framework\DataObject|InfoInterface $payment Payment
+     * @param float $amount                                        Amount
+     *
+     * @return $this
+     */
+    public function order(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    {
+        return $this;
+    }
+
+    /**
+     * Capture payment
+     *
+     * @param \Magento\Framework\DataObject|InfoInterface $payment Payment
+     * @param float $amount                                        Amount
+     *
+     * @return $this
+     */
+    public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    {
+        return $this;
+    }
+
+    /**
+     * Capture payment
+     *
+     * @param \Magento\Framework\DataObject|InfoInterface $payment Payment
+     * @param float $amount                                        Amount
+     *
+     * @return $this
+     */
+    public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    {
+        return $this;
+    }
+
+    /**
+     * Refund specified amount for payment
+     *
+     * @param \Magento\Framework\DataObject|InfoInterface $payment Payment
+     * @param float $amount                                        Amount
+     *
+     * @return $this
+     */
+    public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    {
+        return $this;
+    }
+
+    /**
+     * Void payment
+     *
+     * @param \Magento\Framework\DataObject|InfoInterface $payment Payment
+     *
+     * @return $this
+     */
+    public function void(\Magento\Payment\Model\InfoInterface $payment)
+    {
+        return $this;
+    }
+
+    /**
+     * Attempt to accept a payment that is under review
+     *
+     * @param InfoInterface $payment
+     *
+     * @return false
+     */
+    public function acceptPayment(InfoInterface $payment)
+    {
+        return false;
+    }
+
+    /**
+     * Attempt to deny a payment that is under review
+     *
+     * @param InfoInterface $payment
+     *
+     * @return false
+     */
+    public function denyPayment(InfoInterface $payment)
+    {
+        return false;
+    }
+
+    /**
      * Retrieve information from payment configuration
      *
      * @param string $field
