@@ -22,28 +22,17 @@ namespace Mondido\Mondido\Controller\Checkout;
  * @license  MIT License https://opensource.org/licenses/MIT
  * @link     https://www.mondido.com
  */
-class Error extends \Magento\Framework\App\Action\Action
+class Error extends \Mondido\Mondido\Controller\Checkout\Index
 {
-    /**
-     * Constructor
-     *
-     * @param \Magento\Framework\App\Action\Context $context Context object
-     *
-     * @return void
-     */
-    public function __construct(\Magento\Framework\App\Action\Context $context)
-    {
-        parent::__construct($context);
-    }
-
     /**
      * Execute
      *
-     * @return void
+     * @return \Magento\Framework\Controller\ResultInterface
      */
     public function execute()
     {
-        echo 'Error';
-        die();
+        $message = $this->getRequest()->getParam('error_name');
+        $this->messageManager->addError(__($message));
+        return $this->resultRedirectFactory->create()->setPath('mondido/cart');
     }
 }
