@@ -94,7 +94,7 @@ class Index extends \Magento\Framework\App\Action\Action
             $quote = $this->quoteRepository->get($quoteId);
             try {
                 $order = $this->quoteManagement->submit($quote);
-            } catch(\Magento\Framework\Exception\LocalizedException $e) {
+            } catch (\Magento\Framework\Exception\LocalizedException $e) {
                 $order = false;
                 $this->logger->debug($e);
                 $result['error'] = $e->getMessage();
