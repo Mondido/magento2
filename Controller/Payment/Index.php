@@ -93,6 +93,17 @@ class Index extends \Magento\Framework\App\Action\Action
             $quoteId = $data['payment_ref'];
             $quote = $this->quoteRepository->get($quoteId);
             try {
+                $paymentDetails = json_decode($data['payment_details']);
+
+                $shippingAddress = $quote->getShippingAddress('shipping');
+                $shippingAddress->setFirstname($paymentDetails->first_name);
+                $shippingAddress->setLastname($paymentDetails->last_name);
+                $shippingAddress->setStreet([$paymentDetails->address_1, $paymentDetails->address_2]);
+                $shippingAddress->setCity($paymentDetails->city, $paymentDetails->address_2);
+                $shippingAddress->setPostcode($paymentDetails->zip);
+                $shippingAddress->setTelephone($paymentDetails->phone);
+                $shippingAddress->setEmail('john.doe@example.com');
+
                 $order = $this->quoteManagement->submit($quote);
             } catch (\Magento\Framework\Exception\LocalizedException $e) {
                 $order = false;
