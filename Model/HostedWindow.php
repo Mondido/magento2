@@ -13,6 +13,8 @@
 
 namespace Mondido\Mondido\Model;
 
+use Magento\Payment\Model\InfoInterface;
+
 /**
  * Hosted Window model
  *
