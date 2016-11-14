@@ -259,9 +259,9 @@ class Transaction extends Mondido
             return false;
         }
 
-        $data = ['amount' => number_format($amount, 2), 'reason' => ''];
+        $data = ['amount' => number_format($amount, 2), 'reason' => 'Refund from Magento', 'transaction_id' => $id];
 
-        return $this->call($method, 'refunds', (string) $id, $data);
+        return  $this->call($method, 'refunds', null, $data);
     }
 
 

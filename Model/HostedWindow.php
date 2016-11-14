@@ -138,6 +138,11 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
             throw new \Magento\Framework\Exception\LocalizedException(__($message));
         }
 
+        $payment->setTransactionId($result->id)->setIsTransactionClosed(false);
+        $payment->setAdditionalInformation('id', $result->id);
+        $payment->setAdditionalInformation('href', $result->href);
+        $payment->setAdditionalInformation('status', $result->status);
+
         return true;
     }
 
@@ -151,10 +156,23 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
      */
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
+        $captureTxnId = $payment->getParentTransactionId();
+
+        if (!$captureTxnId) {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __('We can\'t issue a refund transaction because there is no capture transaction.')
+            );
+        }
+
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $this->transaction = $objectManager->get('Mondido\Mondido\Model\Api\Transaction');
 
         $order = $payment->getOrder();
+
+        $canRefundMore = $payment->getCreditmemo()->getInvoice()->canRefund();
+        $isFullRefund = !$canRefundMore &&
+                0 == (double)$order->getBaseTotalOnlineRefunded() + (double)$order->getBaseTotalOfflineRefunded();
+
         $result = $this->transaction->refund($order, $amount);
         $result = json_decode($result);
 
@@ -165,8 +183,13 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
                 $result->description,
                 $result->name
             );
+
             throw new \Magento\Framework\Exception\LocalizedException(__($message));
         }
+
+        $payment->setTransactionId($result->id)
+            ->setIsTransactionClosed(1)
+            ->setShouldCloseParentTransaction(!$canRefundMore);
 
         return $this;
     }
