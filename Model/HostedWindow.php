@@ -116,19 +116,6 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
     }
 
     /**
-     * Capture payment
-     *
-     * @param \Magento\Framework\DataObject|InfoInterface $payment Payment
-     * @param float $amount                                        Amount
-     *
-     * @return $this
-     */
-    public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
-    {
-        return $this;
-    }
-
-    /**
      * Refund specified amount for payment
      *
      * @param \Magento\Framework\DataObject|InfoInterface $payment Payment
