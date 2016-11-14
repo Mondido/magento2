@@ -87,6 +87,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->logger->debug(var_export($data, true));
 
         $result = [];
+        $resultJson = $this->resultJsonFactory->create();
 
         if (array_key_exists('status', $data) && in_array($data['status'], ['approved', 'authorized'])) {
             $quoteId = $data['payment_ref'];
@@ -97,22 +98,18 @@ class Index extends \Magento\Framework\App\Action\Action
                 $order = false;
                 $this->logger->debug($e);
                 $result['error'] = $e->getMessage();
+                $resultJson->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
             }
 
             if ($order) {
-                $result['code'] = 200;
                 $result['order_ref'] = $order->getIncrementId();
                 $this->logger->debug('Order created for quote ID ' . $quoteId);
             } else {
                 $this->logger->debug('Order could not be created for quote ID ' . $quoteId);
             }
-        } else {
-            $result['code'] = 200;
         }
 
         $response = json_encode($result);
-
-        $resultJson = $this->resultJsonFactory->create();
         $resultJson->setData($response);
 
         return $resultJson;
