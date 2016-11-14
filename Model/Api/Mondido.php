@@ -53,7 +53,7 @@ abstract class Mondido
         }
 
         if (sizeof($data)) {
-            if ($method == 'GET') {
+            if ($method != 'POST') {
                 $url .= '?' . http_build_query($data);
             } else {
                 $this->_adapter->addOption(CURLOPT_POSTFIELDS, http_build_query($data));
