@@ -93,16 +93,38 @@ class Index extends \Magento\Framework\App\Action\Action
             $quoteId = $data['payment_ref'];
             $quote = $this->quoteRepository->get($quoteId);
             try {
-                $paymentDetails = json_decode($data['payment_details']);
-
                 $shippingAddress = $quote->getShippingAddress('shipping');
-                $shippingAddress->setFirstname($paymentDetails->first_name);
-                $shippingAddress->setLastname($paymentDetails->last_name);
-                $shippingAddress->setStreet([$paymentDetails->address_1, $paymentDetails->address_2]);
-                $shippingAddress->setCity($paymentDetails->city, $paymentDetails->address_2);
-                $shippingAddress->setPostcode($paymentDetails->zip);
-                $shippingAddress->setTelephone($paymentDetails->phone);
+                $shippingAddress->setFirstname('John');
+                $shippingAddress->setLastname('Doe');
+                $shippingAddress->setStreet(['Street 1', 'Street 2']);
+                $shippingAddress->setCity('City');
+                $shippingAddress->setPostcode('123 45');
+                $shippingAddress->setTelephone('12345');
                 $shippingAddress->setEmail('john.doe@example.com');
+                $shippingAddress->save();
+
+                $billingAddress = $quote->getBillingAddress('billing');
+                $billingAddress->setFirstname('John');
+                $billingAddress->setLastname('Doe');
+                $billingAddress->setStreet(['Street 1', 'Street 2']);
+                $billingAddress->setCity('City');
+                $billingAddress->setPostcode('123 45');
+                $billingAddress->setTelephone('12345');
+                $billingAddress->setEmail('john.doe@example.com');
+                $billingAddress->setCountryId('SE');
+                $billingAddress->save();
+
+
+                $quote->getPayment()->importData(['method' => 'mondido_hostedwindow']);
+                $quote->collectTotals()->save();
+                $quote->setCheckoutMethod('guest');
+
+                if ($quote->getCheckoutMethod() === 'guest') {
+                    $quote->setCustomerId(null);
+                    $quote->setCustomerEmail($quote->getBillingAddress()->getEmail());
+                    $quote->setCustomerIsGuest(true);
+                    $quote->setCustomerGroupId(\Magento\Customer\Api\Data\GroupInterface::NOT_LOGGED_IN_ID);
+                }
 
                 $order = $this->quoteManagement->submit($quote);
             } catch (\Magento\Framework\Exception\LocalizedException $e) {
