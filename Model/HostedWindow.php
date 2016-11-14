@@ -74,5 +74,25 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
      *
      * @var bool
      */
-    protected $_canUseCheckout = false;
+    protected $_canUseCheckout = true;
+
+    /**
+     * Retrieve information from payment configuration
+     *
+     * @param string $field
+     * @param int|string|null|\Magento\Store\Model\Store $storeId
+     *
+     * @return mixed
+     */
+    public function getConfigData($field, $storeId = null)
+    {
+        if ('order_place_redirect_url' === $field) {
+            return $this->getOrderPlaceRedirectUrl();
+        }
+        if (null === $storeId) {
+            $storeId = $this->getStore();
+        }
+        $path = 'payment/mondido/' . $field;
+        return $this->_scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
+    }
 }
