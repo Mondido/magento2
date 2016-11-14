@@ -55,7 +55,7 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
      *
      * @var bool
      */
-    protected $_canCapturePartial = true;
+    protected $_canCapturePartial = false;
 
     /**
      * Payment Method feature
