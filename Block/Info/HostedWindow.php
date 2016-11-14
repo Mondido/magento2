@@ -45,8 +45,7 @@ class HostedWindow extends Info
         }
 
         $info = $this->getInfo();
-        $referenceID = $info->getAdditionalInformation('method_title');
-        $transport = new \Magento\Framework\DataObject([(string)__('Method title') => $referenceID]);
+        $transport = new \Magento\Framework\DataObject();
         $transport->setData('ID', $info->getAdditionalInformation('id'));
         $transport->setData('URL', $info->getAdditionalInformation('href'));
         $transport->setData('Status', $info->getAdditionalInformation('status'));
