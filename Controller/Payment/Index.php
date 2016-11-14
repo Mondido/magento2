@@ -92,6 +92,7 @@ class Index extends \Magento\Framework\App\Action\Action
             try {
                 $order = $this->quoteManagement->submit($quote);
             } catch(\Magento\Framework\Exception\LocalizedException $e) {
+                $order = false;
                 $this->logger->debug($e);
             }
 
