@@ -114,6 +114,9 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
      */
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
+        $order = $payment->getOrder();
+        $transaction->capture($order, $amount);
+
         return $this;
     }
 

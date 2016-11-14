@@ -225,11 +225,22 @@ class Transaction extends Mondido
     /**
      * Capture transaction
      *
+     * @param \Magento\Sales\Model\Order $order  Order
+     * @param float                      $amount Amount to capture
+     *
      * @return string
      */
-    public function capture()
+    public function capture(\Magento\Sales\Model\Order $order, $amount)
     {
         $method = 'PUT';
+
+        $transaction = json_decode($order->getMondidoTransaction());
+
+        if (property_exists($transaction, 'id')) {
+            $id = $transaction->id;
+        } else {
+            return false;
+        }
 
         return $this->call($method, $this->resource, [$id, 'capture']);
     }
