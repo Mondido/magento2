@@ -89,7 +89,11 @@ class Index extends \Magento\Framework\App\Action\Action
         if (array_key_exists('status', $data) && in_array($data['status'], ['approved', 'authorized'])) {
             $quoteId = $data['payment_ref'];
             $quote = $this->quoteRepository->get($quoteId);
-            $order = $this->quoteManagement->submit($quote);
+            try {
+                $order = $this->quoteManagement->submit($quote);
+            } catch(Exception $e) {
+                $this->logger->debug($e);
+            }
 
             if ($order) {
                 $this->logger->debug('Order created for quote ID ' . $quoteId);
