@@ -90,6 +90,12 @@ class Index extends \Magento\Framework\App\Action\Action
             $quoteId = $data['payment_ref'];
             $quote = $this->quoteRepository->get($quoteId);
             $order = $this->quoteManagement->submit($quote);
+
+            if ($order) {
+                $this->logger->debug('Order created for quote ID ' . $quoteId);
+            } else {
+                $this->logger->debug('Order could not be created for quote ID ' . $quoteId);
+            }
         }
 
         $response = json_encode(['code' => 200]);
