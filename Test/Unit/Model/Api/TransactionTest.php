@@ -48,7 +48,11 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $storeManagerMock = $this->getMockBuilder('Magento\Store\Model\StoreManagerInterface')
+        $storeManagerMock = $this->getMockBuilder(
+            'Magento\Store\Model\StoreManagerInterface'
+        );
+
+        $storeManagerMock
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -82,7 +86,11 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
 
         $this->object = $objectManager->getObject(
             '\Mondido\Mondido\Model\Api\Transaction',
-            ['adapter' => $curlMock, 'config' => $configModelMock, 'storeManager' => $storeManagerMock]
+            [
+                'adapter' => $curlMock,
+                'config' => $configModelMock,
+                'storeManager' => $storeManagerMock
+            ]
         );
     }
 

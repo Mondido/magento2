@@ -44,7 +44,9 @@ class IndexTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->objectManager = new ObjectManager($this);
-        $this->object = $this->objectManager->getObject('Mondido\Mondido\Controller\Payment\Index');
+        $this->object = $this->objectManager->getObject(
+            'Mondido\Mondido\Controller\Payment\Index'
+        );
     }
 
     /**
