@@ -240,6 +240,32 @@ class Transaction extends Mondido
     }
 
     /**
+     * Capture transaction
+     *
+     * @param \Magento\Sales\Model\Order $order  Order
+     * @param float                      $amount Amount to capture
+     *
+     * @return string
+     */
+    public function refund(\Magento\Sales\Model\Order $order, $amount)
+    {
+        $method = 'POST';
+
+        $transaction = json_decode($order->getMondidoTransaction());
+
+        if (property_exists($transaction, 'id')) {
+            $id = $transaction->id;
+        } else {
+            return false;
+        }
+
+        $data = ['amount' => number_format($amount, 2), 'reason' => ''];
+
+        return $this->call($method, 'refunds', (string) $id, $data);
+    }
+
+
+    /**
      * Show transaction
      *
      * @param int $id Transaction ID

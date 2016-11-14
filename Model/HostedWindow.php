@@ -151,6 +151,23 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
      */
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $this->transaction = $objectManager->get('Mondido\Mondido\Model\Api\Transaction');
+
+        $order = $payment->getOrder();
+        $result = $this->transaction->refund($order, $amount);
+        $result = json_decode($result);
+
+        if (property_exists($result, 'code') && $result->code != 200) {
+            $message = sprintf(
+                __("Mondido returned error code %d: %s (%s)"),
+                $result->code,
+                $result->description,
+                $result->name
+            );
+            throw new \Magento\Framework\Exception\LocalizedException(__($message));
+        }
+
         return $this;
     }
 
