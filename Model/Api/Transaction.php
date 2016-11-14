@@ -242,7 +242,9 @@ class Transaction extends Mondido
             return false;
         }
 
-        return $this->call($method, $this->resource, [$id, 'capture']);
+        $data = ['amount' => number_format($amount, 2)];
+
+        return $this->call($method, $this->resource, [$id, 'capture'], $data);
     }
 
     /**
