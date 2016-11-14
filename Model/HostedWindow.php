@@ -13,13 +13,7 @@
 
 namespace Mondido\Mondido\Model;
 
-use Magento\Framework\DataObject;
 use Magento\Payment\Model\InfoInterface;
-use Magento\Payment\Model\MethodInterface;
-use Magento\Payment\Observer\AbstractDataAssignObserver;
-use Magento\Sales\Model\Order\Invoice;
-use Magento\Sales\Model\Order\Payment;
-use Magento\Quote\Api\Data\PaymentMethodInterface;
 
 /**
  * Hosted Window model
@@ -92,56 +86,10 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
     protected $transaction;
 
     /**
-     * Constructor
-     *
-     * @param \Magento\Framework\Model\Context                        $context
-     * @param \Magento\Framework\Registry                             $registry
-     * @param \Magento\Framework\Api\ExtensionAttributesFactory       $extensionFactory
-     * @param \Magento\Framework\Api\AttributeValueFactory            $customAttributeFactory Attribute value factory
-     * @param \Magento\Payment\Helper\Data                            $paymentData
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface      $scopeConfig
-     * @param Logger                                                  $logger
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
-     * @param \Mondido\Mondido\Model\Api\Transaction                  $transaction
-     * @param array                                                   $data
-     *
-     * @return void
-     */
-    public function __construct(
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
-        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
-        \Magento\Payment\Helper\Data $paymentData,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Payment\Model\Method\Logger $logger,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        \Mondido\Mondido\Model\Api\Transaction $transaction,
-        array $data = []
-    ) {
-        parent::__construct(
-            $context,
-            $registry,
-            $extensionFactory,
-            $customAttributeFactory,
-            $resource,
-            $resourceCollection,
-            $data
-        );
-        $this->_paymentData = $paymentData;
-        $this->_scopeConfig = $scopeConfig;
-        $this->logger = $logger;
-        $this->transaction = $transaction;
-        $this->initializeData($data);
-    }
-
-    /**
      * Authorize
      *
      * @param \Magento\Framework\DataObject|InfoInterface $payment Payment
-     * @param float                                       $amount  Amount
+     * @param float $amount                                        Amount
      *
      * @return $this
      */
@@ -173,8 +121,11 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
      */
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $this->transaction = $objectManager->get('Mondido\Mondido\Model\Api\Transaction');
+
         $order = $payment->getOrder();
-        $this->transaction->capture($order, $amount);
+        $result = $this->transaction->capture($order, $amount);
 
         return true;
     }
