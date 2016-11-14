@@ -114,8 +114,11 @@ class Index extends \Magento\Framework\App\Action\Action
                 $billingAddress->setCountryId('SE');
                 $billingAddress->save();
 
-
                 $quote->getPayment()->importData(['method' => 'mondido_hostedwindow']);
+                $quote->getPayment()->setAdditionalInformation('id', $data['id']);
+                $quote->getPayment()->setAdditionalInformation('href', $data['href']);
+                $quote->getPayment()->setAdditionalInformation('status', $data['status']);
+
                 $quote->collectTotals()->save();
                 $quote->setCheckoutMethod('guest');
 
