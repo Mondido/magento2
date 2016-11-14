@@ -86,6 +86,8 @@ class Index extends \Magento\Framework\App\Action\Action
         $data = $this->getRequest()->getPostValue();
         $this->logger->debug(var_export($data, true));
 
+        $result = [];
+
         if (array_key_exists('status', $data) && in_array($data['status'], ['approved', 'authorized'])) {
             $quoteId = $data['payment_ref'];
             $quote = $this->quoteRepository->get($quoteId);
@@ -94,16 +96,21 @@ class Index extends \Magento\Framework\App\Action\Action
             } catch(\Magento\Framework\Exception\LocalizedException $e) {
                 $order = false;
                 $this->logger->debug($e);
+                $result['error'] = $e->getMessage();
             }
 
             if ($order) {
+                $result['code'] = 200;
+                $result['order_ref'] = $order->getIncrementId();
                 $this->logger->debug('Order created for quote ID ' . $quoteId);
             } else {
                 $this->logger->debug('Order could not be created for quote ID ' . $quoteId);
             }
+        } else {
+            $result['code'] = 200;
         }
 
-        $response = json_encode(['code' => 200]);
+        $response = json_encode($result);
 
         $resultJson = $this->resultJsonFactory->create();
         $resultJson->setData($response);
