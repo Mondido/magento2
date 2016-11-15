@@ -233,8 +233,8 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * Retrieve information from payment configuration
      *
-     * @param string                                     $field
-     * @param int|string|null|\Magento\Store\Model\Store $storeId
+     * @param string                                     $field   Field in configuration
+     * @param int|string|null|\Magento\Store\Model\Store $storeId Store ID
      *
      * @return mixed
      */
