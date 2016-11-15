@@ -35,9 +35,12 @@ class CheckoutPredispatchObserver implements ObserverInterface
      *
      * @return void
      */
-    public function __construct(\Mondido\Mondido\Model\Api\Transaction $transaction)
-    {
+    public function __construct(
+        \Mondido\Mondido\Model\Api\Transaction $transaction,
+        \Magento\Framework\Message\ManagerInterface $messageManager
+    ) {
         $this->transaction = $transaction;
+        $this->messageManager = $messageManager;
     }
 
     /**
@@ -78,7 +81,23 @@ class CheckoutPredispatchObserver implements ObserverInterface
                     $quote->setMondidoTransaction($response);
                     $quote->save();
                 } else {
-                    // Log $data->description;
+                    $message = sprintf(
+                        __("Mondido returned error code %d: %s (%s)"),
+                        $data->code,
+                        $data->description,
+                        $data->name
+                    );
+
+                    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+                    $request = $objectManager->get('Magento\Framework\App\Request\Http');
+                    $urlInterface = $objectManager->get('Magento\Framework\UrlInterface');
+                    $url = $urlInterface->getUrl('checkout/cart');
+
+                    $this->messageManager->addError(__($message));
+
+                    $observer->getControllerAction()
+                         ->getResponse()
+                         ->setRedirect($url);
                 }
             }
         }

@@ -30,6 +30,7 @@ class Transaction extends Mondido
     protected $_config = 'config';
     protected $_storeManager;
     protected $urlBuilder;
+    protected $helper;
 
     /**
      * Constructor
@@ -38,6 +39,7 @@ class Transaction extends Mondido
      * @param \Mondido\Mondido\Model\Config              $config       Config object
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager Store manager
      * @param \Magento\Framework\UrlInterface            $urlBuilder   URL builder
+     * @param \Mondido\Mondido\Helper\Data               $helper       Data helper
      *
      * @return void
      */
@@ -45,12 +47,14 @@ class Transaction extends Mondido
         \Magento\Framework\HTTP\Adapter\Curl $adapter,
         \Mondido\Mondido\Model\Config $config,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        UrlInterface $urlBuilder
+        UrlInterface $urlBuilder,
+        \Mondido\Mondido\Helper\Data $helper
     ) {
         $this->_adapter = $adapter;
         $this->_config = $config;
         $this->_storeManager = $storeManager;
         $this->urlBuilder = $urlBuilder;
+        $this->helper = $helper;
     }
 
     /**
@@ -66,7 +70,7 @@ class Transaction extends Mondido
             'merchant_id' => $this->_config->getMerchantId(),
             'payment_ref' => $quote->getId(),
             'customer_ref' => $quote->getCustomerId() ? $quote->getCustomerId() : '',
-            'amount' => number_format($quote->getBaseGrandTotal(), 2),
+            'amount' => $this->helper->formatNumber($quote->getBaseGrandTotal()),
             'currency' => strtolower($quote->getBaseCurrencyCode()),
             'test' => $this->_config->isTest() ? 'test' : '',
             'secret' => $this->_config->getSecret()
@@ -104,9 +108,9 @@ class Transaction extends Mondido
                 'artno' => $item->getSku(),
                 'description' => $item->getName(),
                 'qty' => $item->getQty(),
-                'amount' => $item->getBaseRowTotal(),
-                'vat' => $item->getBaseTaxAmount(),
-                'discount' => $item->getBaseDiscountAmount()
+                'amount' => $this->helper->formatNumber($item->getBaseRowTotal()),
+                'vat' => $this->helper->formatNumber($item->getBaseTaxAmount()),
+                'discount' => $this->helper->formatNumber($item->getBaseDiscountAmount())
             ];
         }
 
@@ -116,9 +120,9 @@ class Transaction extends Mondido
             'artno' => $shippingAddress->getShippingMethod(),
             'description' => $shippingAddress->getShippingDescription(),
             'qty' => 1,
-            'amount' => $shippingAddress->getBaseShippingAmount(),
-            'vat' => $shippingAddress->getBaseShippingTaxAmount(),
-            'discount' => $shippingAddress->getBaseDiscountAmount()
+            'amount' => $this->helper->formatNumber($shippingAddress->getBaseShippingAmount()),
+            'vat' => $this->helper->formatNumber($shippingAddress->getBaseShippingTaxAmount()),
+            'discount' => $this->helper->formatNumber($shippingAddress->getBaseDiscountAmount())
         ];
 
         $countryCodes = ['SE' => 'SWE'];
@@ -142,8 +146,8 @@ class Transaction extends Mondido
 
         $data = [
             "merchant_id" => $this->_config->getMerchantId(),
-            "amount" => number_format($quote->getBaseGrandTotal(), 2),
-            "vat_amount" => number_format($shippingAddress->getBaseTaxAmount(), 2),
+            "amount" => $this->helper->formatNumber($quote->getBaseGrandTotal()),
+            "vat_amount" => $this->helper->formatNumber($shippingAddress->getBaseTaxAmount()),
             "payment_ref" => $quote->getId(),
             'test' => $this->_config->isTest() ? 'true' : 'false',
             "metadata" => $metaData,
@@ -196,8 +200,8 @@ class Transaction extends Mondido
         }
 
         $data = [
-            "amount" => number_format($quote->getBaseGrandTotal(), 2),
-            "vat_amount" => number_format(0, 2),
+            "amount" => $this->helper->formatNumber($quote->getBaseGrandTotal()),
+            "vat_amount" => $this->helper->formatNumber(0),
             "metadata" => [],
             "currency" => strtolower($quote->getBaseCurrencyCode()),
             "customer_ref" => $quote->getCustomerId() ? $quote->getCustomerId() : '',
@@ -234,7 +238,7 @@ class Transaction extends Mondido
             return false;
         }
 
-        $data = ['amount' => number_format($amount, 2)];
+        $data = ['amount' => $this->helper->formatNumber($amount)];
 
         return $this->call($method, $this->resource, [$id, 'capture'], $data);
     }
@@ -259,7 +263,7 @@ class Transaction extends Mondido
             return false;
         }
 
-        $data = ['amount' => number_format($amount, 2), 'reason' => 'Refund from Magento', 'transaction_id' => $id];
+        $data = ['amount' => $this->helper->formatNumber($amount), 'reason' => 'Refund from Magento', 'transaction_id' => $id];
 
         return  $this->call($method, 'refunds', null, $data);
     }
