@@ -31,7 +31,8 @@ class CheckoutPredispatchObserver implements ObserverInterface
     /**
      * Constructor
      *
-     * @param \Mondido\Mondido\Model\Api\Transaction $transaction Transaction API model
+     * @param \Mondido\Mondido\Model\Api\Transaction      $transaction    Transaction API model
+     * @param \Magento\Framework\Message\ManagerInterface $messageManager Message manager
      *
      * @return void
      */
