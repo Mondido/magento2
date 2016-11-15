@@ -128,7 +128,7 @@ class Customer extends Mondido
      * Update existing customer at Mondido
      *
      * @param integer|string                        $mondidoId Mondido ID
-     * @param \Magento\Customer\Model\Data\Customer $customer
+     * @param \Magento\Customer\Model\Data\Customer $customer  Magento customer ID
      *
      * @return bool
      */
@@ -252,5 +252,4 @@ class Customer extends Mondido
 
         return $metaData;
     }
-
 }
