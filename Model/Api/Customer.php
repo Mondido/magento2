@@ -47,8 +47,7 @@ class Customer extends Mondido
         \Mondido\Mondido\Model\Config $config,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         UrlInterface $urlBuilder
-    )
-    {
+    ) {
         $this->_adapter = $adapter;
         $this->_config = $config;
         $this->_storeManager = $storeManager;
@@ -86,7 +85,7 @@ class Customer extends Mondido
     /**
      * Create new customer at Mondido
      *
-     * @param \Magento\Customer\Model\Data\Customer $customer
+     * @param \Magento\Customer\Model\Data\Customer $customer Magento customer object
      *
      * @return bool
      */
@@ -96,10 +95,15 @@ class Customer extends Mondido
         $metaData = $this->buildMetadata($customer);
 
         // Send API request
-        $jsonResponse = $this->call('POST', $this->resource, [], [
-            'ref' => $customer->getId(),
-            'metadata' => json_encode($metaData)
-        ]);
+        $jsonResponse = $this->call(
+            'POST',
+            $this->resource,
+            [],
+            [
+                'ref' => $customer->getId(),
+                'metadata' => json_encode($metaData)
+            ]
+        );
 
         // Make sure we've got a response
         if (!$jsonResponse) {
@@ -123,7 +127,7 @@ class Customer extends Mondido
     /**
      * Update existing customer at Mondido
      *
-     * @param                                       $mondidoId
+     * @param integer|string                        $mondidoId Mondido ID
      * @param \Magento\Customer\Model\Data\Customer $customer
      *
      * @return bool
@@ -134,9 +138,14 @@ class Customer extends Mondido
         $metaData = $this->buildMetadata($customer);
 
         // Send API request
-        $jsonResponse = $this->call('PUT', $this->resource, [$mondidoId], [
-            'metadata' => json_encode($metaData)
-        ]);
+        $jsonResponse = $this->call(
+            'PUT',
+            $this->resource,
+            [$mondidoId],
+            [
+                'metadata' => json_encode($metaData)
+            ]
+        );
 
         // Make sure we've got a response
         if (!$jsonResponse) {
