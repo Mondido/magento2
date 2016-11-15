@@ -89,7 +89,7 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
      * Authorize
      *
      * @param \Magento\Framework\DataObject|InfoInterface $payment Payment
-     * @param float $amount                                        Amount
+     * @param float                                       $amount  Amount
      *
      * @return $this
      */
@@ -102,7 +102,7 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
      * Order payment
      *
      * @param \Magento\Framework\DataObject|InfoInterface $payment Payment
-     * @param float $amount                                        Amount
+     * @param float                                       $amount  Amount
      *
      * @return $this
      */
@@ -115,7 +115,7 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
      * Capture payment
      *
      * @param \Magento\Framework\DataObject|InfoInterface $payment Payment
-     * @param float $amount                                        Amount
+     * @param float                                       $amount  Amount
      *
      * @return $this
      */
@@ -145,7 +145,7 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
      * Refund specified amount for payment
      *
      * @param \Magento\Framework\DataObject|InfoInterface $payment Payment
-     * @param float $amount                                        Amount
+     * @param float                                       $amount  Amount
      *
      * @return $this
      */
@@ -169,7 +169,7 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * Attempt to accept a payment that is under review
      *
-     * @param InfoInterface $payment
+     * @param InfoInterface $payment Payment information
      *
      * @return false
      */
@@ -181,7 +181,7 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * Attempt to deny a payment that is under review
      *
-     * @param InfoInterface $payment
+     * @param InfoInterface $payment Payment information
      *
      * @return false
      */
@@ -193,7 +193,7 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * Retrieve information from payment configuration
      *
-     * @param string $field
+     * @param string                                     $field
      * @param int|string|null|\Magento\Store\Model\Store $storeId
      *
      * @return mixed
@@ -207,6 +207,7 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
             $storeId = $this->getStore();
         }
         $path = 'payment/mondido/' . $field;
+
         return $this->_scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
     }
 }
