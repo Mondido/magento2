@@ -204,7 +204,6 @@ class Transaction extends Mondido
             "vat_amount" => $this->helper->formatNumber(0),
             "metadata" => [],
             "currency" => strtolower($quote->getBaseCurrencyCode()),
-            "customer_ref" => $quote->getCustomerId() ? $quote->getCustomerId() : '',
             "hash" => $this->_createHash($quote),
             "items" => json_encode($transactionItems),
             "process" => "false",
