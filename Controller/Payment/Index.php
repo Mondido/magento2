@@ -92,6 +92,7 @@ class Index extends \Magento\Framework\App\Action\Action
         if (array_key_exists('status', $data) && in_array($data['status'], ['approved', 'authorized'])) {
             $quoteId = $data['payment_ref'];
             $quote = $this->quoteRepository->get($quoteId);
+
             try {
                 $shippingAddress = $quote->getShippingAddress('shipping');
                 $shippingAddress->setFirstname('John');
@@ -140,6 +141,52 @@ class Index extends \Magento\Framework\App\Action\Action
             if ($order) {
                 $result['order_ref'] = $order->getIncrementId();
                 $this->logger->debug('Order created for quote ID ' . $quoteId);
+
+                // Authorize transaction
+                try {
+                    // Fetch object manager
+                    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+
+                    // Fetch transaction builder interface
+                    $builderInterface = $objectManager
+                        ->get('Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface');
+
+                    // Prepare the transaction
+                    $payment = $order->getPayment();
+                    $payment->setLastTransId($data['id']);
+                    $payment->setTransactionId($data['id']);
+                    $payment->setAdditionalInformation(
+                        [\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => (array) $data]
+                    );
+                    $formatedPrice = $order->getBaseCurrency()->formatTxt(
+                        $order->getGrandTotal()
+                    );
+
+                    $message = __('The authorized amount is %1.', $formatedPrice);
+
+                    //get the object of builder class
+                    $transaction = $builderInterface
+                        ->setPayment($payment)
+                        ->setOrder($order)
+                        ->setTransactionId($data['id'])
+                        ->setAdditionalInformation(
+                            [\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => (array) $data]
+                        )
+                        ->setFailSafe(true)
+                        //build method creates the transaction and returns the object
+                        ->build(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_AUTH);
+
+                    $payment->addTransactionCommentsToOrder(
+                        $transaction,
+                        $message
+                    );
+                    $payment->setParentTransactionId(null);
+                    $payment->save();
+                    $order->save();
+                } catch (Exception $e) {
+                    $this->logger->debug('Unable to save auth transaction: ' . $e->getMessage());
+                }
+
             } else {
                 $this->logger->debug('Order could not be created for quote ID ' . $quoteId);
             }
