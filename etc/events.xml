@@ -3,4 +3,7 @@
     <event name="sales_model_service_quote_submit_before">
         <observer name="mondido_transaction_to_order" instance="Mondido\Mondido\Observer\QuoteSubmitBeforeObserver"/>
     </event>
+    <event name="customer_save_after_data_object">
+        <observer name="mondido_customer_save" instance="Mondido\Mondido\Observer\CustomerSaveObserver" />
+    </event>
 </config>
