@@ -186,7 +186,6 @@ class Index extends \Magento\Framework\App\Action\Action
                 } catch (Exception $e) {
                     $this->logger->debug('Unable to save auth transaction: ' . $e->getMessage());
                 }
-
             } else {
                 $this->logger->debug('Order could not be created for quote ID ' . $quoteId);
             }
