@@ -5,7 +5,9 @@ define(
         'underscore',
         'Magento_Checkout/js/model/step-navigator',
         'Magento_Checkout/js/action/select-shipping-method',
-        'Magento_Checkout/js/checkout-data'
+        'Magento_Checkout/js/checkout-data',
+        'Magento_Checkout/js/model/quote',
+        'Mondido_Mondido/js/action/send-quote-to-mondido'
     ],
     function (
         ko,
@@ -13,16 +15,20 @@ define(
         _,
         stepNavigator,
         selectShippingMethodAction,
-        checkoutData
+        checkoutData,
+        quote,
+        sendQuoteToMondidoAction
     ) {
         return Component.extend({
             defaults: {
                 template: 'Mondido_Mondido/mondido'
             },
             isVisible: ko.observable(true),
+            isLoading: ko.observable(false),
             transaction: ko.observable(JSON.parse(window.checkoutConfig.quoteData.mondido_transaction).href),
             initialize: function () {
                 this._super();
+                var self = this;
 
                 var shippingMethod = {'carrier_code': 'flatrate', 'method_code': 'flatrate', 'carrier_title': 'Flat rate', 'method_title': 'Fixed'};
                 selectShippingMethodAction(shippingMethod);
@@ -37,10 +43,17 @@ define(
                     20
                 );
 
+                quote.totals.subscribe(function (newValue) {
+                    self.reload();
+                });
+
                 return this;
             },
 
             navigate: function () {
+            },
+            reload: function(newValue) {
+                sendQuoteToMondidoAction(this);
             }
         });
     }

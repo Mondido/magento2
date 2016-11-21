@@ -16,4 +16,6 @@
         <plugin name="get_checkout_url_from_default_config_provider_model"
         	type="Mondido\Mondido\Plugin\Model\DefaultConfigProvider"/>
     </type>
+     <preference for="Mondido\Mondido\Api\TransactionManagementInterface"
+                type="Mondido\Mondido\Model\TransactionManagement" />
 </config>
