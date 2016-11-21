@@ -31,15 +31,17 @@ class Transaction extends Mondido
     protected $_storeManager;
     protected $urlBuilder;
     protected $helper;
+    protected $quoteRepository;
 
     /**
      * Constructor
      *
-     * @param \Magento\Framework\HTTP\Adapter\Curl       $adapter      HTTP adapter
-     * @param \Mondido\Mondido\Model\Config              $config       Config object
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager Store manager
-     * @param \Magento\Framework\UrlInterface            $urlBuilder   URL builder
-     * @param \Mondido\Mondido\Helper\Data               $helper       Data helper
+     * @param \Magento\Framework\HTTP\Adapter\Curl       $adapter         HTTP adapter
+     * @param \Mondido\Mondido\Model\Config              $config          Config object
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager    Store manager
+     * @param \Magento\Framework\UrlInterface            $urlBuilder      URL builder
+     * @param \Mondido\Mondido\Helper\Data               $helper          Data helper
+     * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository Quote repository
      *
      * @return void
      */
@@ -48,13 +50,15 @@ class Transaction extends Mondido
         \Mondido\Mondido\Model\Config $config,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         UrlInterface $urlBuilder,
-        \Mondido\Mondido\Helper\Data $helper
+        \Mondido\Mondido\Helper\Data $helper,
+        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
     ) {
         $this->_adapter = $adapter;
         $this->_config = $config;
         $this->_storeManager = $storeManager;
         $this->urlBuilder = $urlBuilder;
         $this->helper = $helper;
+        $this->quoteRepository = $quoteRepository;
     }
 
     /**
@@ -169,12 +173,16 @@ class Transaction extends Mondido
     /**
      * Update transaction
      *
-     * @param Magento\Quote\Model\Quote $quote A quote object
+     * @param int|Magento\Quote\Model\Quote $quote A quote object
      *
      * @return string|boolean
      */
-    public function update(\Magento\Quote\Model\Quote $quote)
+    public function update($quote)
     {
+        if (!is_object($quote)) {
+            $quote = $this->quoteRepository->getActive($quote);
+        }
+
         $transaction = json_decode($quote->getMondidoTransaction());
 
         if (property_exists($transaction, 'id')) {
