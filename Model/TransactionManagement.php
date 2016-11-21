@@ -39,7 +39,8 @@ class TransactionManagement implements TransactionManagementInterface
      *
      * @return void
      */
-    public function __construct(Transaction $transaction, QuoteIdMaskFactory $quoteIdMaskFactory) {
+    public function __construct(Transaction $transaction, QuoteIdMaskFactory $quoteIdMaskFactory)
+    {
         $this->transaction = $transaction;
         $this->quoteIdMaskFactory = $quoteIdMaskFactory;
     }
@@ -49,7 +50,7 @@ class TransactionManagement implements TransactionManagementInterface
      *
      * Takes the quote and updates the transaction at Mondido and returns the JSON response.
      *
-     * @param string $quoteId Masked quote identifier
+     * @param string $cartId Masked quote identifier
      *
      * @return string
      */

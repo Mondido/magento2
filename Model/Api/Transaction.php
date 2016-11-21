@@ -36,11 +36,12 @@ class Transaction extends Mondido
     /**
      * Constructor
      *
-     * @param \Magento\Framework\HTTP\Adapter\Curl       $adapter      HTTP adapter
-     * @param \Mondido\Mondido\Model\Config              $config       Config object
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager Store manager
-     * @param \Magento\Framework\UrlInterface            $urlBuilder   URL builder
-     * @param \Mondido\Mondido\Helper\Data               $helper       Data helper
+     * @param \Magento\Framework\HTTP\Adapter\Curl       $adapter         HTTP adapter
+     * @param \Mondido\Mondido\Model\Config              $config          Config object
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager    Store manager
+     * @param \Magento\Framework\UrlInterface            $urlBuilder      URL builder
+     * @param \Mondido\Mondido\Helper\Data               $helper          Data helper
+     * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository Quote repository
      *
      * @return void
      */
