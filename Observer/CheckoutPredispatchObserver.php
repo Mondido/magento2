@@ -14,6 +14,8 @@
 namespace Mondido\Mondido\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Customer\Model\AddressFactory;
+use \Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
  * Checkout predispatch observer
@@ -27,6 +29,9 @@ use Magento\Framework\Event\ObserverInterface;
 class CheckoutPredispatchObserver implements ObserverInterface
 {
     protected $transaction;
+    protected $messageManager;
+    protected $addressFactory;
+    protected $scopeConfig;
 
     /**
      * Constructor
@@ -38,10 +43,14 @@ class CheckoutPredispatchObserver implements ObserverInterface
      */
     public function __construct(
         \Mondido\Mondido\Model\Api\Transaction $transaction,
-        \Magento\Framework\Message\ManagerInterface $messageManager
+        \Magento\Framework\Message\ManagerInterface $messageManager,
+        AddressFactory $addressFactory,
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->transaction = $transaction;
         $this->messageManager = $messageManager;
+        $this->addressFactory = $addressFactory;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -57,16 +66,29 @@ class CheckoutPredispatchObserver implements ObserverInterface
 
         $customer = $quote->getCustomer();
 
-        if ($customer->getId() && $customer->getPrimaryShippingAddress()) {
-            $address = $customer->getPrimaryShippingAddress();
-            $quote->setShippingAddress($address);
-            $quote->setBillingAddress($address);
+        $allowedCountries = explode(',', $this->scopeConfig->getValue('general/country/allow'));
+        $defaultCountry = $this->scopeConfig->getValue('general/country/default');
+
+        $forceDefaultCountry = true;
+
+        if ($customer->getId()) {
+            $addressId = $customer->getDefaultShipping();
+            $address = $this->addressFactory->create()->load($addressId)->getDataModel();
+
+            $quote->getShippingAddress()->importCustomerAddressData($address);
+            $quote->getBillingAddress()->importCustomerAddressData($address);
+
+            if (in_array($address->getCountryId(), $allowedCountries)) {
+                $forceDefaultCountry = false;
+            }
         }
 
         $shippingAddress = $quote->getShippingAddress('shipping');
 
-        if (!$shippingAddress->getCountryId()) {
-            $shippingAddress->setCountryId('SE')->save();
+        if ($forceDefaultCountry == true) {
+            if (!$shippingAddress->getCountryId()) {
+                $shippingAddress->setCountryId($defaultCountry)->save();
+            }
         }
 
         if (!$shippingAddress->getShippingMethod()) {

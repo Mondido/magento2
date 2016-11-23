@@ -14,6 +14,7 @@
 namespace Mondido\Mondido\Model\Api;
 
 use Magento\Framework\UrlInterface;
+use Mondido\Mondido\Helper\Iso;
 
 /**
  * Mondido transaction API model
@@ -34,6 +35,11 @@ class Transaction extends Mondido
     protected $quoteRepository;
 
     /**
+     * @var \Mondido\Mondido\Helper\Iso
+     */
+    protected $isoHelper;
+
+    /**
      * Constructor
      *
      * @param \Magento\Framework\HTTP\Adapter\Curl       $adapter         HTTP adapter
@@ -51,7 +57,8 @@ class Transaction extends Mondido
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         UrlInterface $urlBuilder,
         \Mondido\Mondido\Helper\Data $helper,
-        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
+        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
+        Iso $isoHelper
     ) {
         $this->_adapter = $adapter;
         $this->_config = $config;
@@ -59,6 +66,7 @@ class Transaction extends Mondido
         $this->urlBuilder = $urlBuilder;
         $this->helper = $helper;
         $this->quoteRepository = $quoteRepository;
+        $this->isoHelper = $isoHelper;
     }
 
     /**
@@ -290,18 +298,16 @@ class Transaction extends Mondido
     {
         $shippingAddress = $quote->getShippingAddress('shipping');
 
-        $countryCodes = ['SE' => 'SWE'];
-
         $paymentDetails = [
             'email' => $shippingAddress->getEmail(),
             'phone' => $shippingAddress->getTelephone(),
             'first_name' => $shippingAddress->getFirstname(),
             'last_name' => $shippingAddress->getLastname(),
             'zip' => $shippingAddress->getPostcode(),
-            'address_1' => $shippingAddress->getStreetLine(0),
-            'address_2' => $shippingAddress->getStreetLine(1),
+            'address_1' => $shippingAddress->getStreetLine(1),
+            'address_2' => $shippingAddress->getStreetLine(2),
             'city' => $shippingAddress->getCity(),
-            'country_code' => $countryCodes[$shippingAddress->getCountryId()]
+            'country_code' => $this->isoHelper->transform($shippingAddress->getCountryId())
         ];
 
         $data = [
