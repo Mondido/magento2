@@ -109,6 +109,7 @@ class Transaction extends Mondido
 
         $metaData = $this->getMetaData($quote);
         $transactionItems = $this->getItems($quote);
+        $shippingAddress = $quote->getShippingAddress('shipping');
 
         $data = [
             "merchant_id" => $this->_config->getMerchantId(),
@@ -126,7 +127,7 @@ class Transaction extends Mondido
             "authorize" => $this->_config->getPaymentAction() == 'authorize' ? 'true' : 'false',
             "items" => json_encode($transactionItems),
             "webhook" => json_encode($webhook),
-            "payment_details" => $paymentDetails
+            "payment_details" => $metaData['user']
         ];
 
         return $this->call($method, $this->resource, null, $data);
