@@ -88,12 +88,16 @@ class Transaction extends Mondido
     /**
      * Create transaction
      *
-     * @param Magento\Quote\Model\Quote $quote A quote object
+     * @param int|Magento\Quote\Model\Quote $quote A quote object or ID
      *
      * @return string
      */
-    public function create(\Magento\Quote\Model\Quote $quote)
+    public function create($quote)
     {
+        if (!is_object($quote)) {
+            $quote = $this->quoteRepository->getActive($quote);
+        }
+
         $method = 'POST';
 
         $webhook = [
@@ -103,50 +107,8 @@ class Transaction extends Mondido
             'data_format' => 'form_data'
         ];
 
-        $quoteItems = $quote->getAllVisibleItems();
-
-        $transactionItems = [];
-
-        foreach ($quoteItems as $item) {
-            $transactionItems[] = [
-                'artno' => $item->getSku(),
-                'description' => $item->getName(),
-                'qty' => $item->getQty(),
-                'amount' => $this->helper->formatNumber($item->getBaseRowTotal()),
-                'vat' => $this->helper->formatNumber($item->getBaseTaxAmount()),
-                'discount' => $this->helper->formatNumber($item->getBaseDiscountAmount())
-            ];
-        }
-
-        $shippingAddress = $quote->getShippingAddress('shipping');
-
-        $transactionItems[] = [
-            'artno' => $shippingAddress->getShippingMethod(),
-            'description' => $shippingAddress->getShippingDescription(),
-            'qty' => 1,
-            'amount' => $this->helper->formatNumber($shippingAddress->getBaseShippingAmount()),
-            'vat' => $this->helper->formatNumber($shippingAddress->getBaseShippingTaxAmount()),
-            'discount' => $this->helper->formatNumber($shippingAddress->getBaseDiscountAmount())
-        ];
-
-        $countryCodes = ['SE' => 'SWE'];
-
-        $paymentDetails = [
-            'email' => $shippingAddress->getEmail(),
-            'phone' => $shippingAddress->getTelephone(),
-            'first_name' => $shippingAddress->getFirstname(),
-            'last_name' => $shippingAddress->getLastname(),
-            'zip' => $shippingAddress->getPostcode(),
-            'address_1' => $shippingAddress->getStreetLine(0),
-            'address_2' => $shippingAddress->getStreetLine(1),
-            'city' => $shippingAddress->getCity(),
-            'country_code' => $countryCodes[$shippingAddress->getCountryId()]
-        ];
-
-        $metaData = [
-            'user' => $paymentDetails,
-            'products' => $transactionItems
-        ];
+        $metaData = $this->getMetaData($quote);
+        $transactionItems = $this->getItems($quote);
 
         $data = [
             "merchant_id" => $this->_config->getMerchantId(),
@@ -173,7 +135,7 @@ class Transaction extends Mondido
     /**
      * Update transaction
      *
-     * @param int|Magento\Quote\Model\Quote $quote A quote object
+     * @param int|Magento\Quote\Model\Quote $quote A quote object or ID
      *
      * @return string|boolean
      */
@@ -193,24 +155,13 @@ class Transaction extends Mondido
 
         $method = 'PUT';
 
-        $quoteItems = $quote->getAllVisibleItems();
-        $transactionItems = [];
-
-        foreach ($quoteItems as $item) {
-            $transactionItems[] = [
-                'artno' => $item->getSku(),
-                'description' => $item->getName(),
-                'qty' => $item->getQty(),
-                'amount' => $item->getBaseRowTotal(),
-                'vat' => $item->getBaseTaxAmount(),
-                'discount' => $item->getBaseDiscountAmount()
-            ];
-        }
+        $metaData = $this->getMetaData($quote);
+        $transactionItems = $this->getItems($quote);
 
         $data = [
             "amount" => $this->helper->formatNumber($quote->getBaseGrandTotal()),
             "vat_amount" => $this->helper->formatNumber(0),
-            "metadata" => [],
+            "metadata" => $metaData,
             "currency" => strtolower($quote->getBaseCurrencyCode()),
             "hash" => $this->_createHash($quote),
             "items" => json_encode($transactionItems),
@@ -275,7 +226,6 @@ class Transaction extends Mondido
         return  $this->call($method, 'refunds', null, $data);
     }
 
-
     /**
      * Show transaction
      *
@@ -288,5 +238,76 @@ class Transaction extends Mondido
         $method = 'GET';
 
         return $this->call($method, $this->resource, (string) $id);
+    }
+
+    /**
+     * Get items
+     *
+     * @param Magento\Quote\Model\Quote $quote A quote object
+     *
+     * @return array
+     */
+    protected function getItems($quote)
+    {
+        $quoteItems = $quote->getAllVisibleItems();
+
+        $transactionItems = [];
+
+        foreach ($quoteItems as $item) {
+            $transactionItems[] = [
+                'artno' => $item->getSku(),
+                'description' => $item->getName(),
+                'qty' => $item->getQty(),
+                'amount' => $this->helper->formatNumber($item->getBaseRowTotal()),
+                'vat' => $this->helper->formatNumber($item->getBaseTaxAmount()),
+                'discount' => $this->helper->formatNumber($item->getBaseDiscountAmount())
+            ];
+        }
+
+        $shippingAddress = $quote->getShippingAddress('shipping');
+
+        $transactionItems[] = [
+            'artno' => $shippingAddress->getShippingMethod(),
+            'description' => $shippingAddress->getShippingDescription(),
+            'qty' => 1,
+            'amount' => $this->helper->formatNumber($shippingAddress->getBaseShippingAmount()),
+            'vat' => $this->helper->formatNumber($shippingAddress->getBaseShippingTaxAmount()),
+            'discount' => $this->helper->formatNumber($shippingAddress->getBaseDiscountAmount())
+        ];
+
+        return $transactionItems;
+    }
+
+    /**
+     * Get meta data
+     *
+     * @param Magento\Quote\Model\Quote $quote A quote object
+     *
+     * @return array
+     */
+    protected function getMetaData($quote)
+    {
+        $shippingAddress = $quote->getShippingAddress('shipping');
+
+        $countryCodes = ['SE' => 'SWE'];
+
+        $paymentDetails = [
+            'email' => $shippingAddress->getEmail(),
+            'phone' => $shippingAddress->getTelephone(),
+            'first_name' => $shippingAddress->getFirstname(),
+            'last_name' => $shippingAddress->getLastname(),
+            'zip' => $shippingAddress->getPostcode(),
+            'address_1' => $shippingAddress->getStreetLine(0),
+            'address_2' => $shippingAddress->getStreetLine(1),
+            'city' => $shippingAddress->getCity(),
+            'country_code' => $countryCodes[$shippingAddress->getCountryId()]
+        ];
+
+        $data = [
+            'user' => $paymentDetails,
+            'products' => $this->getItems($quote)
+        ];
+
+        return $data;
     }
 }
