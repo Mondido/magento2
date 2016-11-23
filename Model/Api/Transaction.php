@@ -272,7 +272,7 @@ class Transaction extends Mondido
             'qty' => 1,
             'amount' => $this->helper->formatNumber($shippingAddress->getBaseShippingAmount()),
             'vat' => $this->helper->formatNumber($shippingAddress->getBaseShippingTaxAmount()),
-            'discount' => $this->helper->formatNumber($shippingAddress->getBaseDiscountAmount())
+            'discount' => $this->helper->formatNumber($shippingAddress->getBaseShippingDiscountAmount())
         ];
 
         return $transactionItems;
