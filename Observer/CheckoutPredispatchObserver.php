@@ -55,6 +55,14 @@ class CheckoutPredispatchObserver implements ObserverInterface
     {
         $quote = $observer->getEvent()->getControllerAction()->getOnepage()->getQuote();
 
+        $customer = $quote->getCustomer();
+
+        if ($customer->getId() && $customer->getPrimaryShippingAddress()) {
+            $address = $customer->getPrimaryShippingAddress();
+            $quote->setShippingAddress($address);
+            $quote->setBillingAddress($address);
+        }
+
         $shippingAddress = $quote->getShippingAddress('shipping');
 
         if (!$shippingAddress->getCountryId()) {
