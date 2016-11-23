@@ -287,6 +287,6 @@ class Transaction extends Mondido
     {
         $method = 'GET';
 
-        return $this->call($method, $this->resource, $id);
+        return $this->call($method, $this->resource, (string) $id);
     }
 }

@@ -18,6 +18,8 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Psr\Log\LoggerInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\CartManagementInterface;
+use Mondido\Mondido\Helper\Iso;
+use Mondido\Mondido\Model\Api\Transaction;
 
 /**
  * Payment action
@@ -51,6 +53,16 @@ class Index extends \Magento\Framework\App\Action\Action
     protected $quoteManagement;
 
     /**
+     * @var \Mondido\Mondido\Helper\Iso
+     */
+    protected $isoHelper;
+
+    /**
+     * @var \Mondido\Mondido\Model\Api\Transaction
+     */
+    protected $transaction;
+
+    /**
      * Constructor
      *
      * @param \Magento\Framework\App\Action\Context            $context           Context object
@@ -58,6 +70,8 @@ class Index extends \Magento\Framework\App\Action\Action
      * @param \Psr\Log\LoggerInterface                         $logger            Logger interface
      * @param \Magento\Quote\Api\CartRepositoryInterface       $quoteRepository   Cart repository interface
      * @param \Magento\Quote\Api\CartManagementInterface       $quoteManagement   Cart management interface
+     * @param \Mondido\Mondido\Helper\Iso                      $isoHelper         ISO helper
+     * @param \Mondido\Mondido\Api\Transaction                 $transaction       Transaction API model
      *
      * @return void
      */
@@ -66,7 +80,9 @@ class Index extends \Magento\Framework\App\Action\Action
         JsonFactory $resultJsonFactory,
         LoggerInterface $logger,
         CartRepositoryInterface $quoteRepository,
-        CartManagementInterface $quoteManagement
+        CartManagementInterface $quoteManagement,
+        Iso $isoHelper,
+        Transaction $transaction
     ) {
         parent::__construct($context);
 
@@ -74,6 +90,8 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->logger = $logger;
         $this->quoteRepository = $quoteRepository;
         $this->quoteManagement = $quoteManagement;
+        $this->isoHelper = $isoHelper;
+        $this->transaction = $transaction;
     }
 
     /**
@@ -93,25 +111,28 @@ class Index extends \Magento\Framework\App\Action\Action
             $quoteId = $data['payment_ref'];
             $quote = $this->quoteRepository->get($quoteId);
             try {
+                $transactionJson = $this->transaction->show($data['id']);
+                $transaction = json_decode($transactionJson);
+
                 $shippingAddress = $quote->getShippingAddress('shipping');
-                $shippingAddress->setFirstname('John');
-                $shippingAddress->setLastname('Doe');
-                $shippingAddress->setStreet(['Street 1', 'Street 2']);
-                $shippingAddress->setCity('City');
-                $shippingAddress->setPostcode('123 45');
-                $shippingAddress->setTelephone('12345');
+                $shippingAddress->setFirstname($transaction->payment_details->first_name);
+                $shippingAddress->setLastname($transaction->payment_details->last_name);
+                $shippingAddress->setStreet([$transaction->payment_details->address_1, $transaction->payment_details->address_2]);
+                $shippingAddress->setCity($transaction->payment_details->city);
+                $shippingAddress->setPostcode($transaction->payment_details->zip);
+                $shippingAddress->setTelephone($transaction->payment_details->phone ?: '0');
                 $shippingAddress->setEmail('john.doe@example.com');
                 $shippingAddress->save();
 
                 $billingAddress = $quote->getBillingAddress('billing');
-                $billingAddress->setFirstname('John');
-                $billingAddress->setLastname('Doe');
-                $billingAddress->setStreet(['Street 1', 'Street 2']);
-                $billingAddress->setCity('City');
-                $billingAddress->setPostcode('123 45');
-                $billingAddress->setTelephone('12345');
+                $billingAddress->setFirstname($transaction->payment_details->first_name);
+                $billingAddress->setLastname($transaction->payment_details->last_name);
+                $billingAddress->setStreet([$transaction->payment_details->address_1, $transaction->payment_details->address_2]);
+                $billingAddress->setCity($transaction->payment_details->city);
+                $billingAddress->setPostcode($transaction->payment_details->zip);
+                $billingAddress->setTelephone($transaction->payment_details->phone ?: '0');
                 $billingAddress->setEmail('john.doe@example.com');
-                $billingAddress->setCountryId('SE');
+                $billingAddress->setCountryId($this->isoHelper->convertFromAlpha3($transaction->payment_details->country_code));
                 $billingAddress->save();
 
                 $quote->getPayment()->importData(['method' => 'mondido_hostedwindow']);
