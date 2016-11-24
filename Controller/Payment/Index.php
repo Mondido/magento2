@@ -137,6 +137,7 @@ class Index extends \Magento\Framework\App\Action\Action
                     $shippingAddress->setPostcode($transaction->payment_details->zip);
                     $shippingAddress->setTelephone($transaction->payment_details->phone ?: '0');
                     $shippingAddress->setEmail('john.doe@example.com');
+                    $shippingAddress->setCountryId($this->isoHelper->convertFromAlpha3($transaction->payment_details->country_code));
                     $shippingAddress->save();
 
                     $billingAddress = $quote->getBillingAddress('billing');
