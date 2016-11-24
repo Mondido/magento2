@@ -1,7 +1,13 @@
 <?xml version="1.0"?>
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
-    <route url="/V1/mondido/:cartId/update" method="POST">
+    <route url="/V1/mondido/guest-transactions/:cartId/update" method="POST">
+        <service class="Mondido\Mondido\Api\GuestTransactionManagementInterface" method="update"/>
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+    <route url="/V1/mondido/transactions/:cartId/update" method="POST">
         <service class="Mondido\Mondido\Api\TransactionManagementInterface" method="update"/>
         <resources>
             <resource ref="anonymous" />

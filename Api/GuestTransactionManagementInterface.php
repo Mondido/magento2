@@ -22,10 +22,10 @@ namespace Mondido\Mondido\Api;
  * @license  MIT License https://opensource.org/licenses/MIT
  * @link     https://www.mondido.com
  */
-interface TransactionManagementInterface
+interface GuestTransactionManagementInterface
 {
     /**
-     * @param int $cartId Quote identifier
+     * @param string $cartId Quote identifier
      *
      * @return string
      */

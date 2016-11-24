@@ -37,7 +37,8 @@ define(
         'use strict';
         return function (view) {
             var urls = {
-                'default': '/mondido/:cartId/update',
+                'guest': '/mondido/guest-transactions/:cartId/update',
+                'customer': '/mondido/transactions/:cartId/update'
             };
 
             var serviceUrl = urlManager.getUrl(urls, {'cartId': quote.getQuoteId()});

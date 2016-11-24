@@ -13,9 +13,9 @@
 
 namespace Mondido\Mondido\Model;
 
-use Mondido\Mondido\Api\TransactionManagementInterface;
+use Mondido\Mondido\Api\GuestTransactionManagementInterface;
 use Mondido\Mondido\Model\Api\Transaction;
-use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Quote\Model\QuoteIdMaskFactory;
 
 /**
  * Transaction management model
@@ -26,23 +26,23 @@ use Magento\Quote\Api\CartRepositoryInterface;
  * @license  MIT License https://opensource.org/licenses/MIT
  * @link     https://www.mondido.com
  */
-class TransactionManagement implements TransactionManagementInterface
+class GuestTransactionManagement implements GuestTransactionManagementInterface
 {
     protected $transaction;
-    protected $cartRepository;
+    protected $quoteIdMaskFactory;
 
     /**
      * Constructor
      *
      * @param Mondido\Mondido\Model\Api\Transaction  $transaction        Mondido transaction API model
-     * @param Magento\Quote\Api\CartRepositoryInterface $cartRepository     Cart repository
+     * @param Magento\Quote\Model\QuoteIdMaskFactory $quoteIdMaskFactory Quote ID mask factory
      *
      * @return void
      */
-    public function __construct(Transaction $transaction, CartRepositoryInterface $cartRepository)
+    public function __construct(Transaction $transaction, QuoteIdMaskFactory $quoteIdMaskFactory)
     {
         $this->transaction = $transaction;
-        $this->cartRepository = $cartRepository;
+        $this->quoteIdMaskFactory = $quoteIdMaskFactory;
     }
 
     /**
@@ -50,14 +50,14 @@ class TransactionManagement implements TransactionManagementInterface
      *
      * Takes the quote and updates the transaction at Mondido and returns the JSON response.
      *
-     * @param id $cartId Quote identifier
+     * @param string $cartId Masked quote identifier
      *
      * @return string
      */
     public function update($cartId)
     {
-        $quote = $this->cartRepository->get($cartId);
+        $quoteIdMask = $this->quoteIdMaskFactory->create()->load($cartId, 'masked_id');
 
-        return $this->transaction->update($quote);
+        return $this->transaction->update($quoteIdMask->getQuoteId());
     }
 }

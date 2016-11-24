@@ -18,4 +18,6 @@
     </type>
      <preference for="Mondido\Mondido\Api\TransactionManagementInterface"
                 type="Mondido\Mondido\Model\TransactionManagement" />
+     <preference for="Mondido\Mondido\Api\GuestTransactionManagementInterface"
+                type="Mondido\Mondido\Model\GuestTransactionManagement" />
 </config>
