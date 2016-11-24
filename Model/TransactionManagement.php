@@ -34,8 +34,8 @@ class TransactionManagement implements TransactionManagementInterface
     /**
      * Constructor
      *
-     * @param Mondido\Mondido\Model\Api\Transaction  $transaction        Mondido transaction API model
-     * @param Magento\Quote\Api\CartRepositoryInterface $cartRepository     Cart repository
+     * @param Mondido\Mondido\Model\Api\Transaction     $transaction    Mondido transaction API model
+     * @param Magento\Quote\Api\CartRepositoryInterface $cartRepository Cart repository
      *
      * @return void
      */

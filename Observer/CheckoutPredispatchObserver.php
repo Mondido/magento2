@@ -15,7 +15,9 @@ namespace Mondido\Mondido\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Customer\Model\AddressFactory;
-use \Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Message\ManagerInterface;
+use Mondido\Mondido\Model\Api\Transaction;
 
 /**
  * Checkout predispatch observer
@@ -36,14 +38,16 @@ class CheckoutPredispatchObserver implements ObserverInterface
     /**
      * Constructor
      *
-     * @param \Mondido\Mondido\Model\Api\Transaction      $transaction    Transaction API model
-     * @param \Magento\Framework\Message\ManagerInterface $messageManager Message manager
+     * @param \Mondido\Mondido\Model\Api\Transaction             $transaction    Transaction API model
+     * @param \Magento\Framework\Message\ManagerInterface        $messageManager Message manager
+     * @param \Magento\Customer\Model\AddressFactory             $addressFactory Cusomter address factory
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig    Scope config
      *
      * @return void
      */
     public function __construct(
-        \Mondido\Mondido\Model\Api\Transaction $transaction,
-        \Magento\Framework\Message\ManagerInterface $messageManager,
+        Transaction $transaction,
+        ManagerInterface $messageManager,
         AddressFactory $addressFactory,
         ScopeConfigInterface $scopeConfig
     ) {
