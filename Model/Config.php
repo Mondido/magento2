@@ -13,7 +13,7 @@
 
 namespace Mondido\Mondido\Model;
 
-use \Magento\Framework\App\Config\ScopeConfigInterface as ScopeConfigInterface;
+use \Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
  * Config model
