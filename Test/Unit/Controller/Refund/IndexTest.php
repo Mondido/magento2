@@ -60,10 +60,7 @@ class IndexTest extends \PHPUnit_Framework_TestCase
             ->setMethods(['create'])
             ->getMock();
 
-        $this->logger = $this->getMockBuilder('Psr\Logger\LoggerInterface')
-            ->disableOriginalConstructor()
-            ->setMethods(['debug'])
-            ->getMock();
+        $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')->getMockForAbstractClass();
 
         $this->object = $this->objectManager->getObject(
             'Mondido\Mondido\Controller\Refund\Index',
@@ -100,5 +97,6 @@ class IndexTest extends \PHPUnit_Framework_TestCase
         $this->object = null;
         $this->objectManager = null;
         $this->resultJson = null;
+        $this->logger = null;
     }
 }

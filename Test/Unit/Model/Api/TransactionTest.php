@@ -13,7 +13,7 @@
 
 namespace Mondido\Mondido\Test\Unit\Model\Api;
 
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManager;
+use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
 /**
  * Mondido transaction test
@@ -37,8 +37,7 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-
-        $objectManager = new ObjectManager($this);
+        $this->objectManager = new ObjectManager($this);
 
         $configModelMock = $this->getMockBuilder('Mondido\Mondido\Model\Config')
             ->disableOriginalConstructor()
@@ -48,11 +47,17 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $storeManagerMock = $this->getMockBuilder(
-            'Magento\Store\Model\StoreManagerInterface'
-        );
+        $storeManagerMock = $this->getMockBuilder('Magento\Store\Model\StoreManagerInterface')->getMock();
 
-        $storeManagerMock
+        $urlBuilderMock = $this->getMockBuilder('Magento\Framework\UrlInterface')->getMock();
+
+        $quoteRepositoryMock = $this->getMockBuilder('Magento\Quote\Api\CartRepositoryInterface')->getMock();
+
+        $helperMock = $this->getMockBuilder('Mondido\Mondido\Helper\Data')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $isoHelperMock = $this->getMockBuilder('Mondido\Mondido\Helper\Iso')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -84,12 +89,16 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
             ->method('close')
             ->willReturn(true);
 
-        $this->object = $objectManager->getObject(
+        $this->object = $this->objectManager->getObject(
             '\Mondido\Mondido\Model\Api\Transaction',
             [
                 'adapter' => $curlMock,
                 'config' => $configModelMock,
-                'storeManager' => $storeManagerMock
+                'storeManager' => $storeManagerMock,
+                'urlBuilder' => $urlBuilderMock,
+                'helper' => $helperMock,
+                'quoteRepository' => $quoteRepositoryMock,
+                'isoHelper' => $isoHelperMock
             ]
         );
     }
@@ -103,29 +112,41 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
     {
         $quoteModelMock = $this->getMock(
             'Magento\Quote\Model\Quote',
-            ['getItemsCount', 'getItemsQty', '__wakeup', 'getAllVisibleItems'],
+            ['getItemsCount', 'getItemsQty', '__wakeup', 'getAllVisibleItems', 'getShippingAddress', 'isVirtual'],
             [],
             '',
             false
         );
 
+        $addressMock = $this->getMockBuilder('Magento\Quote\Model\Quote\Address')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $addressMock->expects($this->once())
+            ->method('getFirstname')
+            ->willReturn('John');
+
         $quoteItemMock = $this->getMockBuilder('Magento\Quote\Model\Quote\Item')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $quoteModelMock->expects($this->once())
+        $quoteModelMock->expects($this->any())
             ->method('getAllVisibleItems')
             ->willReturn([$quoteItemMock]);
 
-        $quoteItemMock->expects($this->once())
+        $quoteModelMock->expects($this->any())
+            ->method('getShippingAddress')
+            ->willReturn($addressMock);
+
+        $quoteItemMock->expects($this->any())
             ->method('getSku')
             ->willReturn('sku');
 
-        $quoteItemMock->expects($this->once())
+        $quoteItemMock->expects($this->any())
             ->method('getName')
             ->willReturn('name');
 
-        $quoteItemMock->expects($this->once())
+        $quoteItemMock->expects($this->any())
             ->method('getQty')
             ->willReturn(1);
 

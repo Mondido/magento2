@@ -39,11 +39,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
         $this->scopeConfigMock = $this->getMockBuilder(
             'Magento\Framework\App\Config\ScopeConfigInterface'
-        );
-
-        $this->scopeConfigMock
-            ->disableOriginalConstructor()
-            ->getMock();
+        )->getMock();
 
         $this->object = $objectManager->getObject(
             '\Mondido\Mondido\Model\Config',

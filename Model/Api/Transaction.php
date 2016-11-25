@@ -15,6 +15,11 @@ namespace Mondido\Mondido\Model\Api;
 
 use Magento\Framework\UrlInterface;
 use Mondido\Mondido\Helper\Iso;
+use Magento\Framework\HTTP\Adapter\Curl;
+use Mondido\Mondido\Model\Config;
+use Magento\Store\Model\StoreManagerInterface;
+use Mondido\Mondido\Helper\Data;
+use Magento\Quote\Api\CartRepositoryInterface;
 
 /**
  * Mondido transaction API model
@@ -53,12 +58,12 @@ class Transaction extends Mondido
      * @return void
      */
     public function __construct(
-        \Magento\Framework\HTTP\Adapter\Curl $adapter,
-        \Mondido\Mondido\Model\Config $config,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        Curl $adapter,
+        Config $config,
+        StoreManagerInterface $storeManager,
         UrlInterface $urlBuilder,
-        \Mondido\Mondido\Helper\Data $helper,
-        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
+        Data $helper,
+        CartRepositoryInterface $quoteRepository,
         Iso $isoHelper
     ) {
         $this->_adapter = $adapter;

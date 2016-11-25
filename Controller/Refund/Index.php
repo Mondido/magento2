@@ -13,6 +13,8 @@
 
 namespace Mondido\Mondido\Controller\Refund;
 
+use Psr\Log\LoggerInterface;
+
 /**
  * Refund action
  *
@@ -41,7 +43,7 @@ class Index extends \Magento\Framework\App\Action\Action
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-        \Psr\Log\LoggerInterface $logger
+        LoggerInterface $logger
     ) {
         parent::__construct($context);
 
