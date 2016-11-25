@@ -21,6 +21,7 @@ use Magento\Quote\Api\CartManagementInterface;
 use Mondido\Mondido\Helper\Iso;
 use Mondido\Mondido\Model\Api\Transaction;
 use Mondido\Mondido\Helper\Data;
+use Magento\Sales\Model\Order;
 
 /**
  * Payment action
@@ -69,6 +70,11 @@ class Index extends \Magento\Framework\App\Action\Action
     protected $helper;
 
     /**
+     * @var \Magento\Sales\Model\Order
+     */
+    protected $order;
+
+    /**
      * Constructor
      *
      * @param \Magento\Framework\App\Action\Context            $context           Context object
@@ -79,6 +85,7 @@ class Index extends \Magento\Framework\App\Action\Action
      * @param \Mondido\Mondido\Helper\Iso                      $isoHelper         ISO helper
      * @param \Mondido\Mondido\Api\Transaction                 $transaction       Transaction API model
      * @param \Mondido\Mondido\Helper\Data                     $helper            Data helper
+     * @param \Magento\Sales\Model\Order                       $order             Order model
      *
      * @return void
      */
@@ -91,7 +98,7 @@ class Index extends \Magento\Framework\App\Action\Action
         Iso $isoHelper,
         Transaction $transaction,
         Data $helper,
-        \Magento\Sales\Model\Order $order
+        Order $order
     ) {
         parent::__construct($context);
 
