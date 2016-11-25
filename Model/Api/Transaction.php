@@ -274,16 +274,18 @@ class Transaction extends Mondido
             ];
         }
 
-        $shippingAddress = $quote->getShippingAddress('shipping');
+        if (!$quote->isVirtual()) {
+            $shippingAddress = $quote->getShippingAddress('shipping');
 
-        $transactionItems[] = [
-            'artno' => $shippingAddress->getShippingMethod(),
-            'description' => $shippingAddress->getShippingDescription(),
-            'qty' => 1,
-            'amount' => $this->helper->formatNumber($shippingAddress->getBaseShippingAmount()),
-            'vat' => $this->helper->formatNumber($shippingAddress->getBaseShippingTaxAmount()),
-            'discount' => $this->helper->formatNumber($shippingAddress->getBaseShippingDiscountAmount())
-        ];
+            $transactionItems[] = [
+                'artno' => $shippingAddress->getShippingMethod(),
+                'description' => $shippingAddress->getShippingDescription(),
+                'qty' => 1,
+                'amount' => $this->helper->formatNumber($shippingAddress->getBaseShippingAmount()),
+                'vat' => $this->helper->formatNumber($shippingAddress->getBaseShippingTaxAmount()),
+                'discount' => $this->helper->formatNumber($shippingAddress->getBaseShippingDiscountAmount())
+            ];
+        }
 
         return $transactionItems;
     }
