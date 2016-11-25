@@ -90,7 +90,8 @@ class Index extends \Magento\Framework\App\Action\Action
         CartManagementInterface $quoteManagement,
         Iso $isoHelper,
         Transaction $transaction,
-        Data $helper
+        Data $helper,
+        \Magento\Sales\Model\Order $order
     ) {
         parent::__construct($context);
 
@@ -101,6 +102,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->isoHelper = $isoHelper;
         $this->transaction = $transaction;
         $this->helper = $helper;
+        $this->order = $order;
     }
 
     /**
@@ -118,60 +120,67 @@ class Index extends \Magento\Framework\App\Action\Action
 
         if (array_key_exists('status', $data) && in_array($data['status'], ['approved', 'authorized'])) {
             $quoteId = $data['payment_ref'];
-            $quote = $this->quoteRepository->get($quoteId);
+            $incrementId = $this->order->loadByAttribute('quote_id', $quoteId)->getIncrementId();
 
-            if ($data['amount'] !== $this->helper->formatNumber($quote->getBaseGrandTotal())) {
+            if ($incrementId) {
                 $order = false;
-                $result['error'] = 'Wrong amount';
-                $resultJson->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+                $result['error'] = 'Order with increment ID ' . $incrementId . ' already exists for this transaction';
             } else {
-                try {
-                    $transactionJson = $this->transaction->show($data['id']);
-                    $transaction = json_decode($transactionJson);
+                $quote = $this->quoteRepository->get($quoteId);
 
-                    $shippingAddress = $quote->getShippingAddress('shipping');
-                    $shippingAddress->setFirstname($transaction->payment_details->first_name);
-                    $shippingAddress->setLastname($transaction->payment_details->last_name);
-                    $shippingAddress->setStreet([$transaction->payment_details->address_1, $transaction->payment_details->address_2]);
-                    $shippingAddress->setCity($transaction->payment_details->city);
-                    $shippingAddress->setPostcode($transaction->payment_details->zip);
-                    $shippingAddress->setTelephone($transaction->payment_details->phone ?: '0');
-                    $shippingAddress->setEmail('john.doe@example.com');
-                    $shippingAddress->setCountryId($this->isoHelper->convertFromAlpha3($transaction->payment_details->country_code));
-                    $shippingAddress->save();
-
-                    $billingAddress = $quote->getBillingAddress('billing');
-                    $billingAddress->setFirstname($transaction->payment_details->first_name);
-                    $billingAddress->setLastname($transaction->payment_details->last_name);
-                    $billingAddress->setStreet([$transaction->payment_details->address_1, $transaction->payment_details->address_2]);
-                    $billingAddress->setCity($transaction->payment_details->city);
-                    $billingAddress->setPostcode($transaction->payment_details->zip);
-                    $billingAddress->setTelephone($transaction->payment_details->phone ?: '0');
-                    $billingAddress->setEmail('john.doe@example.com');
-                    $billingAddress->setCountryId($this->isoHelper->convertFromAlpha3($transaction->payment_details->country_code));
-                    $billingAddress->save();
-
-                    $quote->getPayment()->importData(['method' => 'mondido_hostedwindow']);
-                    $quote->getPayment()->setAdditionalInformation('id', $data['id']);
-                    $quote->getPayment()->setAdditionalInformation('href', $data['href']);
-                    $quote->getPayment()->setAdditionalInformation('status', $data['status']);
-
-                    $quote->collectTotals()->save();
-                    $quote->setCheckoutMethod('guest');
-
-                    if ($quote->getCheckoutMethod() === 'guest') {
-                        $quote->setCustomerId(null);
-                        $quote->setCustomerEmail($quote->getBillingAddress()->getEmail());
-                        $quote->setCustomerIsGuest(true);
-                        $quote->setCustomerGroupId(\Magento\Customer\Api\Data\GroupInterface::NOT_LOGGED_IN_ID);
-                    }
-
-                    $order = $this->quoteManagement->submit($quote);
-                } catch (\Magento\Framework\Exception\LocalizedException $e) {
+                if ($data['amount'] !== $this->helper->formatNumber($quote->getBaseGrandTotal())) {
                     $order = false;
-                    $this->logger->debug($e);
-                    $result['error'] = $e->getMessage();
+                    $result['error'] = 'Wrong amount';
                     $resultJson->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+                } else {
+                    try {
+                        $transactionJson = $this->transaction->show($data['id']);
+                        $transaction = json_decode($transactionJson);
+
+                        $shippingAddress = $quote->getShippingAddress('shipping');
+                        $shippingAddress->setFirstname($transaction->payment_details->first_name);
+                        $shippingAddress->setLastname($transaction->payment_details->last_name);
+                        $shippingAddress->setStreet([$transaction->payment_details->address_1, $transaction->payment_details->address_2]);
+                        $shippingAddress->setCity($transaction->payment_details->city);
+                        $shippingAddress->setPostcode($transaction->payment_details->zip);
+                        $shippingAddress->setTelephone($transaction->payment_details->phone ?: '0');
+                        $shippingAddress->setEmail('john.doe@example.com');
+                        $shippingAddress->setCountryId($this->isoHelper->convertFromAlpha3($transaction->payment_details->country_code));
+                        $shippingAddress->save();
+
+                        $billingAddress = $quote->getBillingAddress('billing');
+                        $billingAddress->setFirstname($transaction->payment_details->first_name);
+                        $billingAddress->setLastname($transaction->payment_details->last_name);
+                        $billingAddress->setStreet([$transaction->payment_details->address_1, $transaction->payment_details->address_2]);
+                        $billingAddress->setCity($transaction->payment_details->city);
+                        $billingAddress->setPostcode($transaction->payment_details->zip);
+                        $billingAddress->setTelephone($transaction->payment_details->phone ?: '0');
+                        $billingAddress->setEmail('john.doe@example.com');
+                        $billingAddress->setCountryId($this->isoHelper->convertFromAlpha3($transaction->payment_details->country_code));
+                        $billingAddress->save();
+
+                        $quote->getPayment()->importData(['method' => 'mondido_hostedwindow']);
+                        $quote->getPayment()->setAdditionalInformation('id', $data['id']);
+                        $quote->getPayment()->setAdditionalInformation('href', $data['href']);
+                        $quote->getPayment()->setAdditionalInformation('status', $data['status']);
+
+                        $quote->collectTotals()->save();
+                        $quote->setCheckoutMethod('guest');
+
+                        if ($quote->getCheckoutMethod() === 'guest') {
+                            $quote->setCustomerId(null);
+                            $quote->setCustomerEmail($quote->getBillingAddress()->getEmail());
+                            $quote->setCustomerIsGuest(true);
+                            $quote->setCustomerGroupId(\Magento\Customer\Api\Data\GroupInterface::NOT_LOGGED_IN_ID);
+                        }
+
+                        $order = $this->quoteManagement->submit($quote);
+                    } catch (\Magento\Framework\Exception\LocalizedException $e) {
+                        $order = false;
+                        $this->logger->debug($e);
+                        $result['error'] = $e->getMessage();
+                        $resultJson->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+                    }
                 }
             }
 
