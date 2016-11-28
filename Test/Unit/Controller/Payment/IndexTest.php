@@ -43,9 +43,54 @@ class IndexTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
+        $this->contextMock = $this->getMockBuilder('Magento\Framework\App\Action\Context')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->resultJsonFactoryMock = $this->getMockBuilder('Magento\Framework\Controller\Result\JsonFactory')
+            ->disableOriginalConstructor()
+            ->setMethods(['create'])
+            ->getMock();
+
+        $this->loggerMock = $this->getMockBuilder('Psr\Log\LoggerInterface')
+            ->getMockForAbstractClass();
+
+        $this->quoteRepositoryMock = $this->getMockBuilder('Magento\Quote\Api\CartRepositoryInterface')
+            ->getMock();
+
+        $this->quoteManagementMock = $this->getMockBuilder('Magento\Quote\Api\CartManagementInterface')
+            ->getMock();
+
+        $this->isoHelperMock = $this->getMockBuilder('Mondido\Mondido\Helper\Iso')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->transactionMock = $this->getMockBuilder('Mondido\Mondido\Model\Api\Transaction')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->helperMock = $this->getMockBuilder('Mondido\Mondido\Helper\Data')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->orderMock = $this->getMockBuilder('Magento\Sales\Model\Order')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->objectManager = new ObjectManager($this);
         $this->object = $this->objectManager->getObject(
-            'Mondido\Mondido\Controller\Payment\Index'
+            'Mondido\Mondido\Controller\Payment\Index',
+            [
+                'context' => $this->contextMock,
+                'resultJsonFactory' => $this->resultJsonFactoryMock,
+                'logger' => $this->loggerMock,
+                'quoteRepository' => $this->quoteRepositoryMock,
+                'quoteManagement' => $this->quoteManagementMock,
+                'isoHelper' => $this->isoHelperMock,
+                'transaction' => $this->transactionMock,
+                'helper' => $this->helperMock,
+                'order' => $this->orderMock
+            ]
         );
     }
 
@@ -65,7 +110,16 @@ class IndexTest extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
-        $this->object = null;
+        $this->contextMock = null;
+        $this->resultJsonFactoryMock = null;
+        $this->loggerMock = null;
+        $this->quoteRepositoryMock = null;
+        $this->quoteManagementMock = null;
+        $this->isoHelperMock = null;
+        $this->transactionMock = null;
+        $this->helperMock = null;
+        $this->orderMock = null;
         $this->objectManager = null;
+        $this->object = null;
     }
 }
