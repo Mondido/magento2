@@ -126,23 +126,26 @@ class Transaction extends Mondido
         $shippingAddress = $quote->getShippingAddress('shipping');
 
         $data = [
-            "merchant_id" => $this->_config->getMerchantId(),
-            "amount" => $this->helper->formatNumber($quote->getBaseGrandTotal()),
-            "vat_amount" => $this->helper->formatNumber($shippingAddress->getBaseTaxAmount()),
-            "payment_ref" => $quote->getId(),
+            'merchant_id' => $this->_config->getMerchantId(),
+            'amount' => $this->helper->formatNumber($quote->getBaseGrandTotal()),
+            'vat_amount' => $this->helper->formatNumber($shippingAddress->getBaseTaxAmount()),
+            'payment_ref' => $quote->getId(),
             'test' => $this->_config->isTest() ? 'true' : 'false',
-            "metadata" => $metaData,
+            'metadata' => $metaData,
             'currency' => strtolower($quote->getBaseCurrencyCode()),
-            "customer_ref" => $quote->getCustomerId() ? $quote->getCustomerId() : '',
-            "hash" => $this->_createHash($quote),
-            "process" => "false",
-            "success_url" => $this->urlBuilder->getUrl('mondido/checkout/redirect'),
-            "error_url" => $this->urlBuilder->getUrl('mondido/checkout/error'),
-            "authorize" => $this->_config->getPaymentAction() == 'authorize' ? 'true' : 'false',
-            "items" => json_encode($transactionItems),
-            "webhook" => json_encode($webhook),
-            "payment_details" => $metaData['user']
+            'hash' => $this->_createHash($quote),
+            'process' => 'false',
+            'success_url' => $this->urlBuilder->getUrl('mondido/checkout/redirect'),
+            'error_url' => $this->urlBuilder->getUrl('mondido/checkout/error'),
+            'authorize' => $this->_config->getPaymentAction() == 'authorize' ? 'true' : 'false',
+            'items' => json_encode($transactionItems),
+            'webhook' => json_encode($webhook),
+            'payment_details' => $metaData['user']
         ];
+
+        if ($quote->getCustomerId()) {
+            $data['customer_ref'] = $quote->getCustomerId();
+        }
 
         return $this->call($method, $this->resource, null, $data);
     }
@@ -174,19 +177,18 @@ class Transaction extends Mondido
         $transactionItems = $this->getItems($quote);
 
         $data = [
-            "amount" => $this->helper->formatNumber($quote->getBaseGrandTotal()),
-            "vat_amount" => $this->helper->formatNumber(0),
-            "metadata" => $metaData,
-            "currency" => strtolower($quote->getBaseCurrencyCode()),
-            "hash" => $this->_createHash($quote),
-            "items" => json_encode($transactionItems),
-            "process" => "false",
-            "card_expiry" => "1217",
-            "card_cvv" => "200",
-            "card_number" => "41111111111111",
-            "card_holder" => "John Doe",
-            "card_type" => "VISA"
+            'amount' => $this->helper->formatNumber($quote->getBaseGrandTotal()),
+            'vat_amount' => $this->helper->formatNumber(0),
+            'metadata' => $metaData,
+            'currency' => strtolower($quote->getBaseCurrencyCode()),
+            'hash' => $this->_createHash($quote),
+            'items' => json_encode($transactionItems),
+            'process' => 'false'
         ];
+
+        if ($quote->getCustomerId()) {
+            $data['customer_ref'] = $quote->getCustomerId();
+        }
 
         return $this->call($method, $this->resource, (string) $id, $data);
     }
