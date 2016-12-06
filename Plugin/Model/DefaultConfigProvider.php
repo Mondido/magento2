@@ -56,6 +56,6 @@ class DefaultConfigProvider
             return $result;
         }
 
-        return $this->urlBuilder->getUrl('checkout');
+        return $this->urlBuilder->getUrl('mondido/checkout');
     } 
 }
