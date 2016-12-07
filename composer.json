@@ -45,6 +45,17 @@
             "Mondido\\Mondido\\": ""
         }
     },
+    "autoload-dev": {
+        "files": [
+            "Test/Unit/var/AddressExtensionInterface.php",
+            "Test/Unit/var/OrderExtensionInterface.php",
+            "Test/Unit/var/StoreExtensionInterface.php",
+            "Test/Unit/var/CartItemExtensionInterface.php"
+        ],
+        "psr-4": {
+            "Mondido\\Mondido\\": ""
+        }
+    },
     "scripts": {
         "phpunit": "phpunit",
         "phpcs": "phpcs"

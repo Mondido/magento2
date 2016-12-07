@@ -62,6 +62,7 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $storeMock = $this->getMockBuilder('Magento\Store\Model\Store')
+        #$storeMock = $this->getMockBuilder(\Magento\Framework\App\Config\ScopeConfigInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -118,7 +119,7 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
             false
         );
 
-        $addressMock = $this->getMockBuilder('Magento\Quote\Model\Quote\Address')
+        $addressMock = $this->getMockBuilder('Magento\Quote\Model\Quote\Address', ['quote' => $quoteModelMock])
             ->disableOriginalConstructor()
             ->getMock();
 
