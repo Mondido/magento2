@@ -8,7 +8,7 @@
 
 The easiest way to install the extension is to use [Composer](https://getcomposer.org). Run the following commands:
 
-`$ composer require mondido/magento2-mondido`
+`$ composer require mondido/magento2`
 
 `$ bin/magento module:enable Mondido_Mondido`
 
