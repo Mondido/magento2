@@ -275,7 +275,7 @@ class Transaction extends Mondido
                 'artno' => $item->getSku(),
                 'description' => $item->getName(),
                 'qty' => $item->getQty(),
-                'amount' => $this->helper->formatNumber($item->getBaseRowTotal()),
+                'amount' => $this->helper->formatNumber($item->getBaseRowTotalInclTax()),
                 'vat' => $this->helper->formatNumber($item->getBaseTaxAmount()),
                 'discount' => $this->helper->formatNumber($item->getBaseDiscountAmount())
             ];
