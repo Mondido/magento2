@@ -137,7 +137,7 @@ class Transaction extends Mondido
             'process' => 'false',
             'success_url' => $this->urlBuilder->getUrl('mondido/checkout/redirect'),
             'error_url' => $this->urlBuilder->getUrl('mondido/checkout/error'),
-            'authorize' => $this->_config->getPaymentAction() == 'authorize' ? 'true' : 'false',
+            'authorize' => 'true',
             'items' => json_encode($transactionItems),
             'webhook' => json_encode($webhook),
             'payment_details' => $metaData['user']
