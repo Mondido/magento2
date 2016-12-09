@@ -151,7 +151,7 @@ class Index extends \Magento\Framework\App\Action\Action
                         $shippingAddress->setCity($transaction->payment_details->city);
                         $shippingAddress->setPostcode($transaction->payment_details->zip);
                         $shippingAddress->setTelephone($transaction->payment_details->phone ?: '0');
-                        $shippingAddress->setEmail('john.doe@example.com');
+                        $shippingAddress->setEmail($transaction->payment_details->email);
                         $shippingAddress->setCountryId($this->isoHelper->convertFromAlpha3($transaction->payment_details->country_code));
                         $shippingAddress->save();
 
@@ -162,7 +162,7 @@ class Index extends \Magento\Framework\App\Action\Action
                         $billingAddress->setCity($transaction->payment_details->city);
                         $billingAddress->setPostcode($transaction->payment_details->zip);
                         $billingAddress->setTelephone($transaction->payment_details->phone ?: '0');
-                        $billingAddress->setEmail('john.doe@example.com');
+                        $billingAddress->setEmail($transaction->payment_details->email);
                         $billingAddress->setCountryId($this->isoHelper->convertFromAlpha3($transaction->payment_details->country_code));
                         $billingAddress->save();
 
