@@ -175,10 +175,11 @@ class Transaction extends Mondido
 
         $metaData = $this->getMetaData($quote);
         $transactionItems = $this->getItems($quote);
+        $shippingAddress = $quote->getShippingAddress('shipping');
 
         $data = [
             'amount' => $this->helper->formatNumber($quote->getBaseGrandTotal()),
-            'vat_amount' => $this->helper->formatNumber(0),
+            'vat_amount' => $this->helper->formatNumber($shippingAddress->getBaseTaxAmount()),
             'metadata' => $metaData,
             'currency' => strtolower($quote->getBaseCurrencyCode()),
             'hash' => $this->_createHash($quote),
