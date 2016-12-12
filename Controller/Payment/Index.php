@@ -22,6 +22,7 @@ use Mondido\Mondido\Helper\Iso;
 use Mondido\Mondido\Model\Api\Transaction;
 use Mondido\Mondido\Helper\Data;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 
 /**
  * Payment action
@@ -75,17 +76,23 @@ class Index extends \Magento\Framework\App\Action\Action
     protected $order;
 
     /**
+     * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender
+     */
+    protected $orderSender;
+
+    /**
      * Constructor
      *
-     * @param \Magento\Framework\App\Action\Context            $context           Context object
-     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory Result factory
-     * @param \Psr\Log\LoggerInterface                         $logger            Logger interface
-     * @param \Magento\Quote\Api\CartRepositoryInterface       $quoteRepository   Cart repository interface
-     * @param \Magento\Quote\Api\CartManagementInterface       $quoteManagement   Cart management interface
-     * @param \Mondido\Mondido\Helper\Iso                      $isoHelper         ISO helper
-     * @param \Mondido\Mondido\Api\Transaction                 $transaction       Transaction API model
-     * @param \Mondido\Mondido\Helper\Data                     $helper            Data helper
-     * @param \Magento\Sales\Model\Order                       $order             Order model
+     * @param \Magento\Framework\App\Action\Context               $context           Context object
+     * @param \Magento\Framework\Controller\Result\JsonFactory    $resultJsonFactory Result factory
+     * @param \Psr\Log\LoggerInterface                            $logger            Logger interface
+     * @param \Magento\Quote\Api\CartRepositoryInterface          $quoteRepository   Cart repository interface
+     * @param \Magento\Quote\Api\CartManagementInterface          $quoteManagement   Cart management interface
+     * @param \Mondido\Mondido\Helper\Iso                         $isoHelper         ISO helper
+     * @param \Mondido\Mondido\Api\Transaction                    $transaction       Transaction API model
+     * @param \Mondido\Mondido\Helper\Data                        $helper            Data helper
+     * @param \Magento\Sales\Model\Order                          $order             Order model
+     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender       Order seder
      *
      * @return void
      */
@@ -98,7 +105,8 @@ class Index extends \Magento\Framework\App\Action\Action
         Iso $isoHelper,
         Transaction $transaction,
         Data $helper,
-        Order $order
+        Order $order,
+        OrderSender $orderSender
     ) {
         parent::__construct($context);
 
@@ -110,6 +118,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->transaction = $transaction;
         $this->helper = $helper;
         $this->order = $order;
+        $this->orderSender = $orderSender;
     }
 
     /**
@@ -194,6 +203,14 @@ class Index extends \Magento\Framework\App\Action\Action
             if ($order) {
                 $result['order_ref'] = $order->getIncrementId();
                 $this->logger->debug('Order created for quote ID ' . $quoteId);
+
+                if ($order->getCanSendNewEmailFlag()) {
+                    try {
+                        $this->orderSender->send($order);
+                    } catch (\Exception $e) {
+                        $this->_logger->critical($e);
+                    }
+                }
             } else {
                 $this->logger->debug('Order could not be created for quote ID ' . $quoteId);
             }
