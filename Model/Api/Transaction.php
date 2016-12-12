@@ -276,21 +276,28 @@ class Transaction extends Mondido
                 'artno' => $item->getSku(),
                 'description' => $item->getName(),
                 'qty' => $item->getQty(),
-                'amount' => $this->helper->formatNumber($item->getBaseRowTotalInclTax()),
-                'vat' => $this->helper->formatNumber($item->getBaseTaxAmount()),
+                'amount' => $this->helper->formatNumber($item->getBaseRowTotalInclTax() - $item->getBaseDiscountAmount()),
+                'vat' => $this->helper->formatNumber($item->getTaxPercent()),
                 'discount' => $this->helper->formatNumber($item->getBaseDiscountAmount())
             ];
         }
 
         if (!$quote->isVirtual()) {
             $shippingAddress = $quote->getShippingAddress('shipping');
+            $baseShippingAmount = $shippingAddress->getBaseShippingAmount();
+
+            if ($baseShippingAmount > 0) {
+                $shippingVat = $baseShippingAmount / ($baseShippingAmount - $shippingAddress->getBaseShippingTaxAmount());
+            } else {
+                $shippingVat = 0;
+            }
 
             $transactionItems[] = [
                 'artno' => $shippingAddress->getShippingMethod(),
                 'description' => $shippingAddress->getShippingDescription(),
                 'qty' => 1,
-                'amount' => $this->helper->formatNumber($shippingAddress->getBaseShippingAmount()),
-                'vat' => $this->helper->formatNumber($shippingAddress->getBaseShippingTaxAmount()),
+                'amount' => $this->helper->formatNumber($baseShippingAmount),
+                'vat' => $this->helper->formatNumber($shippingVat),
                 'discount' => $this->helper->formatNumber($shippingAddress->getBaseShippingDiscountAmount())
             ];
         }
