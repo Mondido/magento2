@@ -49,8 +49,9 @@ class Config
     public function getMerchantId()
     {
         $configPath = sprintf($this->configPathPattern, 'merchant_id');
+        $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
 
-        return $this->_scopeConfig->getValue($configPath);
+        return $this->_scopeConfig->getValue($configPath, $scope);
     }
 
     /**
@@ -61,8 +62,9 @@ class Config
     public function getPassword()
     {
         $configPath = sprintf($this->configPathPattern, 'password');
+        $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
 
-        return $this->_scopeConfig->getValue($configPath);
+        return $this->_scopeConfig->getValue($configPath, $scope);
     }
 
     /**
@@ -73,8 +75,9 @@ class Config
     public function getSecret()
     {
         $configPath = sprintf($this->configPathPattern, 'secret');
+        $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
 
-        return $this->_scopeConfig->getValue($configPath);
+        return $this->_scopeConfig->getValue($configPath, $scope);
     }
 
     /**
@@ -85,8 +88,9 @@ class Config
     public function getPaymentAction()
     {
         $configPath = sprintf($this->configPathPattern, 'payment_action');
+        $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
 
-        return $this->_scopeConfig->getValue($configPath);
+        return $this->_scopeConfig->getValue($configPath, $scope);
     }
 
     /**
@@ -97,8 +101,9 @@ class Config
     public function isActive()
     {
         $configPath = sprintf($this->configPathPattern, 'active');
+        $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
 
-        return $this->_scopeConfig->isSetFlag($configPath);
+        return $this->_scopeConfig->isSetFlag($configPath, $scope);
     }
 
     /**
@@ -109,7 +114,8 @@ class Config
     public function isTest()
     {
         $configPath = sprintf($this->configPathPattern, 'test');
+        $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
 
-        return $this->_scopeConfig->isSetFlag($configPath);
+        return $this->_scopeConfig->isSetFlag($configPath, $scope);
     }
 }
