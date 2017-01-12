@@ -21,7 +21,7 @@ Another option is to manually add `"mondido/magento2-mondido": "dev-master"` to 
 ```
     {
         "type": "vcs",
-        "url": "https://github.com/kodbruket/magento2-mondido"
+        "url": "https://github.com/Mondido/magento2"
     }
 ```
 
