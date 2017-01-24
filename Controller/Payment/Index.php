@@ -136,12 +136,15 @@ class Index extends \Magento\Framework\App\Action\Action
 
         if (array_key_exists('status', $data) && in_array($data['status'], ['approved', 'authorized'])) {
             $quoteId = $data['payment_ref'];
-            $incrementId = $this->order->loadByAttribute('quote_id', $quoteId)->getIncrementId();
+            $orderObject = $this->order->loadByAttribute('quote_id', $quoteId);
+            $incrementId = $orderObject->getIncrementId();
 
             if ($incrementId) {
-                $order = false;
-                $result['error'] = 'Order with increment ID ' . $incrementId . ' already exists for this transaction';
+                // Order is already created
+                $order = $orderObject;
+                $orderIsAlreadyCreated = true;
             } else {
+                // Prepare to create order
                 $quote = $this->quoteRepository->get($quoteId);
 
                 if ($data['amount'] !== $this->helper->formatNumber($quote->getBaseGrandTotal())) {
@@ -202,7 +205,13 @@ class Index extends \Magento\Framework\App\Action\Action
 
             if ($order) {
                 $result['order_ref'] = $order->getIncrementId();
-                $this->logger->debug('Order created for quote ID ' . $quoteId);
+
+                // Add notice in the logs about the event
+                if (isset($orderIsAlreadyCreated) && $orderIsAlreadyCreated) {
+                    $this->logger->debug('Order was already created for quote ID ' . $quoteId);
+                } else {
+                    $this->logger->debug('Order created for quote ID ' . $quoteId);
+                }
 
                 if ($order->getCanSendNewEmailFlag()) {
                     try {
@@ -211,6 +220,7 @@ class Index extends \Magento\Framework\App\Action\Action
                         $this->_logger->critical($e);
                     }
                 }
+
             } else {
                 $this->logger->debug('Order could not be created for quote ID ' . $quoteId);
             }
