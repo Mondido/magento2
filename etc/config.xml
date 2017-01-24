@@ -14,9 +14,6 @@
                 <allowspecific>0</allowspecific>
                 <title>Mondido Hosted Window</title>
             </mondido_hostedwindow>
-            <mondido>
-                <title>Mondido Hosted Window</title>
-            </mondido>
         </payment>
     </default>
 </config>
