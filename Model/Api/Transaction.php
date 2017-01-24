@@ -214,9 +214,17 @@ class Transaction extends Mondido
             return false;
         }
 
-        $data = ['amount' => $this->helper->formatNumber($amount)];
+        // Assure remote transaction only is reserved
+        $currentTransaction = $this->show($id);
+        if (is_object($currentTransaction) && property_exists($currentTransaction, 'status')) {
+            if ($currentTransaction->status == 'authorized') {
+                $data = ['amount' => $this->helper->formatNumber($amount)];
 
-        return $this->call($method, $this->resource, [$id, 'capture'], $data);
+                return $this->call($method, $this->resource, [$id, 'capture'], $data);
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -239,9 +247,13 @@ class Transaction extends Mondido
             return false;
         }
 
-        $data = ['amount' => $this->helper->formatNumber($amount), 'reason' => 'Refund from Magento', 'transaction_id' => $id];
+        $data = [
+            'amount' => $this->helper->formatNumber($amount),
+            'reason' => 'Refund from Magento',
+            'transaction_id' => $id
+        ];
 
-        return  $this->call($method, 'refunds', null, $data);
+        return $this->call($method, 'refunds', null, $data);
     }
 
     /**
