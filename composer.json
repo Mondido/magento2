@@ -1,5 +1,5 @@
 {
-    "name": "mondido/module-mondido",
+    "name": "mondido/magento2-mondido",
     "description": "Mondido payment module for Magento 2.",
     "version": "1.0.1",
     "type": "magento2-module",
