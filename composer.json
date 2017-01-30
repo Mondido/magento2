@@ -1,7 +1,7 @@
 {
     "name": "mondido/module-mondido",
     "description": "Mondido payment module for Magento 2.",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "type": "magento2-module",
     "repositories": [
         {
