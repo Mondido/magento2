@@ -47,21 +47,8 @@ class Redirect extends \Magento\Checkout\Controller\Onepage
 
         $session->setLastRealOrderId($reservedOrderId);
 
-        $url = $this->_url->getUrl('mondido/checkout/success');
-        echo '<!doctype html>
-<html>
-<head>
-<script>
-    var isInIframe = (window.location != window.parent.location) ? true : false;
-    if (isInIframe == true) {
-        window.top.location.href = "'.$url.'";
-    } else {
-        window.location.href = "'.$url.'";
-    }
-</script>
-</head>
-<body></body>
-</html>';
-        die;
+        $resultPage = $this->resultPageFactory->create();
+
+        return $resultPage;
     }
 }

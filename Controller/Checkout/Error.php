@@ -34,21 +34,8 @@ class Error extends \Mondido\Mondido\Controller\Checkout\Index
         $message = $this->getRequest()->getParam('error_name');
         $this->messageManager->addError(__($message));
 
-        $url = $this->_url->getUrl('checkout/cart');
-        echo '<!doctype html>
-<html>
-<head>
-<script>
-    var isInIframe = (window.location != window.parent.location) ? true : false;
-    if (isInIframe == true) {
-        window.top.location.href = "'.$url.'";
-    } else {
-        window.location.href = "'.$url.'";
-    }
-</script>
-</head>
-<body></body>
-</html>';
-        die;
+        $resultPage = $this->resultPageFactory->create();
+
+        return $resultPage;
     }
 }
