@@ -220,7 +220,6 @@ class Index extends \Magento\Framework\App\Action\Action
                         $this->_logger->critical($e);
                     }
                 }
-
             } else {
                 $this->logger->debug('Order could not be created for quote ID ' . $quoteId);
             }

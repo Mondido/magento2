@@ -1,6 +1,3 @@
-<!doctype html>
-<html>
-<head>
 <script>
     var isInIframe = (window.location != window.parent.location) ? true : false;
     if (isInIframe == true) {
@@ -9,6 +6,3 @@
         window.location.href = "<?php echo $block->getUrl('checkout/cart'); ?>";
     }
 </script>
-</head>
-<body></body>
-</html>
