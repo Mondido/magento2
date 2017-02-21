@@ -39,7 +39,10 @@ class Success extends \Mondido\Mondido\Controller\Checkout\Index
 
         $session->clearQuote();
         $resultPage = $this->resultPageFactory->create();
-
+        $this->_eventManager->dispatch(
+            'checkout_onepage_controller_success_action',
+            ['order_ids' => [$session->getLastOrderId()]]
+        );
         return $resultPage;
     }
 }
