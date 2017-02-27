@@ -1,14 +1,37 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
- * See COPYING.txt for license details.
+ * Mondido
+ *
+ * PHP version 5.6
+ *
+ * @category Mondido
+ * @package  Mondido_Mondido
+ * @author   Andreas Karlsson <andreas@kodbruket.se>
+ * @license  MIT License https://opensource.org/licenses/MIT
+ * @link     https://www.mondido.com
  */
+
 namespace Mondido\Mondido\Block;
 
+/**
+ * Registration block
+ *
+ * PHP version 5.6
+ *
+ * @category Mondido
+ * @package  Mondido_Mondido
+ * @author   Andreas Karlsson <andreas@kodbruket.se>
+ * @license  MIT License https://opensource.org/licenses/MIT
+ * @link     https://www.mondido.com
+ */
 class Registration extends \Magento\Checkout\Block\Registration
 {
     /**
-     * {@inheritdoc}
+     * To HTML
+     *
+     * Return empty string.
+     *
+     * @return string
      */
     public function toHtml()
     {
