@@ -147,7 +147,11 @@ class Index extends \Magento\Framework\App\Action\Action
                 // Prepare to create order
                 $quote = $this->quoteRepository->get($quoteId);
 
-                if ($data['amount'] !== $this->helper->formatNumber($quote->getBaseGrandTotal())) {
+                if ($quote->getIsActive()) {
+                    $order = false;
+                    $result['error'] = 'Quote is still active in Magento, please try again in a while.';
+                    $resultJson->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_INTERNAL_ERROR);
+                } else if ($data['amount'] !== $this->helper->formatNumber($quote->getBaseGrandTotal())) {
                     $order = false;
                     $result['error'] = 'Wrong amount';
                     $resultJson->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
