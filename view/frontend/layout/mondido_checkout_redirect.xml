@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="empty" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
-		<referenceBlock name="head.additional">
-            <block class="Magento\Framework\View\Element\Template" name="mondido_error" template="Mondido_Mondido::redirect_to_successs.phtml" />
+        <referenceBlock name="head.additional">
+            <block class="Magento\Framework\View\Element\Template" name="mondido_redirect" template="Mondido_Mondido::redirect_to_success.phtml" />
         </referenceBlock>
         <referenceBlock name="after.body.start" remove="true"/>
         <referenceBlock name="page.wrapper" remove="true" />
