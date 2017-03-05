@@ -20,6 +20,7 @@ use Mondido\Mondido\Model\Config;
 use Magento\Store\Model\StoreManagerInterface;
 use Mondido\Mondido\Helper\Data;
 use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Quote\Model\ShippingMethodManagement;
 
 /**
  * Mondido transaction API model
@@ -64,7 +65,8 @@ class Transaction extends Mondido
         UrlInterface $urlBuilder,
         Data $helper,
         CartRepositoryInterface $quoteRepository,
-        Iso $isoHelper
+        Iso $isoHelper,
+        ShippingMethodManagement $shippingMethodManagement
     ) {
         $this->_adapter = $adapter;
         $this->_config = $config;
@@ -73,6 +75,7 @@ class Transaction extends Mondido
         $this->helper = $helper;
         $this->quoteRepository = $quoteRepository;
         $this->isoHelper = $isoHelper;
+        $this->shippingMethodManagement = $shippingMethodManagement;
     }
 
     /**
@@ -86,7 +89,7 @@ class Transaction extends Mondido
     {
         $hashRecipe = [
             'merchant_id' => $this->_config->getMerchantId(),
-            'payment_ref' => $quote->getId(),
+            'payment_ref' => 'kodbruket' . $quote->getId(),
             'customer_ref' => $quote->getCustomerId() ? $quote->getCustomerId() : '',
             'amount' => $this->helper->formatNumber($quote->getBaseGrandTotal()),
             'currency' => strtolower($quote->getBaseCurrencyCode()),
@@ -129,7 +132,7 @@ class Transaction extends Mondido
             'merchant_id' => $this->_config->getMerchantId(),
             'amount' => $this->helper->formatNumber($quote->getBaseGrandTotal()),
             'vat_amount' => $this->helper->formatNumber($shippingAddress->getBaseTaxAmount()),
-            'payment_ref' => $quote->getId(),
+            'payment_ref' => 'kodbruket' . $quote->getId(),
             'test' => $this->_config->isTest() ? 'true' : 'false',
             'metadata' => $metaData,
             'currency' => strtolower($quote->getBaseCurrencyCode()),
@@ -328,6 +331,25 @@ class Transaction extends Mondido
     {
         $shippingAddress = $quote->getShippingAddress('shipping');
 
+        $shippingMethods = $this->shippingMethodManagement->getList($quote->getId());
+
+        $shippingData = [];
+
+        foreach ($shippingMethods as $shippingMethod) {
+            $shippingData[] = [
+                'carrier_code' => $shippingMethod->getCarrierCode(),
+                'method_code' => $shippingMethod->getMethodCode(),
+                'carrier_title' => $shippingMethod->getCarrierTitle(),
+                'method_title' => $shippingMethod->getMethodTitle(),
+                'amount' => $shippingMethod->getAmount(),
+                'base_amount' => $shippingMethod->getBaseAmount(),
+                'available' => $shippingMethod->getAvailable(),
+                'error_message' => $shippingMethod->getErrorMessage(),
+                'price_excl_tax' => $shippingMethod->getPriceExclTax(),
+                'getPriceInclTax' => $shippingMethod->getPriceInclTax()
+            ];
+        }
+
         $paymentDetails = [
             'email' => $shippingAddress->getEmail(),
             'phone' => $shippingAddress->getTelephone(),
@@ -342,7 +364,8 @@ class Transaction extends Mondido
 
         $data = [
             'user' => $paymentDetails,
-            'products' => $this->getItems($quote)
+            'products' => $this->getItems($quote),
+            'shipping_methods' => $shippingData
         ];
 
         return $data;
