@@ -210,18 +210,18 @@ class Index extends \Magento\Framework\App\Action\Action
             if ($order) {
                 $result['order_ref'] = $order->getIncrementId();
 
-                // Add notice in the logs about the event
                 if (isset($orderIsAlreadyCreated) && $orderIsAlreadyCreated) {
                     $this->logger->debug('Order was already created for quote ID ' . $quoteId);
                 } else {
                     $this->logger->debug('Order created for quote ID ' . $quoteId);
-                }
 
-                if ($order->getCanSendNewEmailFlag()) {
-                    try {
-                        $this->orderSender->send($order);
-                    } catch (\Exception $e) {
-                        $this->_logger->critical($e);
+                    if ($order->getCanSendNewEmailFlag()) {
+                        try {
+                            $this->orderSender->send($order);
+                            $order->setCanSendNewEmailFlag(false)->save();
+                        } catch (\Exception $e) {
+                            $this->_logger->critical($e);
+                        }
                     }
                 }
             } else {
