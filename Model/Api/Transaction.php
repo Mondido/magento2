@@ -215,12 +215,16 @@ class Transaction extends Mondido
         }
 
         // Assure remote transaction only is reserved
-        $currentTransaction = $this->show($id);
+        $currentTransactionJson = $this->show($id);
+        $currentTransaction = json_decode($currentTransactionJson);
+
         if (is_object($currentTransaction) && property_exists($currentTransaction, 'status')) {
             if ($currentTransaction->status == 'authorized') {
                 $data = ['amount' => $this->helper->formatNumber($amount)];
 
                 return $this->call($method, $this->resource, [$id, 'capture'], $data);
+            } else {
+                return $currentTransactionJson;
             }
         }
 
