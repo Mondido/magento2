@@ -7,7 +7,9 @@ define(
         'Magento_Checkout/js/action/select-shipping-method',
         'Magento_Checkout/js/checkout-data',
         'Magento_Checkout/js/model/quote',
-        'Mondido_Mondido/js/action/send-quote-to-mondido'
+        'Mondido_Mondido/js/action/send-quote-to-mondido',
+        'iframeResizer',
+        'jquery'
     ],
     function (
         ko,
@@ -17,7 +19,9 @@ define(
         selectShippingMethodAction,
         checkoutData,
         quote,
-        sendQuoteToMondidoAction
+        sendQuoteToMondidoAction,
+        iframeResizer,
+        $
     ) {
         return Component.extend({
             defaults: {
@@ -47,9 +51,20 @@ define(
                     self.reload();
                 });
 
+                this.resizeIframe();
+
                 return this;
             },
+            resizeIframe: function() {
+                el = $('#mondido-iframe');
 
+                if (el.length != 1) {
+                    setTimeout(this.resizeIframe, 500);
+                    return;
+                }
+
+                $('#mondido-iframe').iFrameResize({checkOrigin: false});
+            },
             navigate: function () {
             },
             reload: function(newValue) {
