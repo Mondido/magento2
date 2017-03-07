@@ -134,7 +134,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $result = [];
         $resultJson = $this->resultJsonFactory->create();
 
-        if (array_key_exists('status', $data) && in_array($data['status'], ['approved', 'authorized'])) {
+        if (array_key_exists('status', $data) && in_array($data['status'], ['authorized'])) {
             $quoteId = $data['payment_ref'];
             $orderObject = $this->order->loadByAttribute('quote_id', $quoteId);
             $incrementId = $orderObject->getIncrementId();
