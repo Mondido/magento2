@@ -31,6 +31,15 @@ class HostedWindow extends Info
      */
     protected $_template = 'Mondido_Mondido::info/hostedwindow.phtml';
 
+    public function __construct(
+        \Magento\Framework\View\Element\Template\Context $context,
+        \Mondido\Mondido\Model\Api\Transaction $transaction,
+        array $data = []
+    ) {
+        $this->transaction = $transaction;
+        parent::__construct($context, $data);
+    }
+
     /**
      * Prepare specific information
      *
@@ -46,9 +55,23 @@ class HostedWindow extends Info
 
         $info = $this->getInfo();
         $transport = new \Magento\Framework\DataObject();
-        $transport->setData('ID', $info->getAdditionalInformation('id'));
-        $transport->setData('URL', $info->getAdditionalInformation('href'));
-        $transport->setData('Status', $info->getAdditionalInformation('status'));
+
+        $transaction = $this->transaction->show($info->getAdditionalInformation('id'));
+
+        $data = json_decode($transaction, true);
+
+        $transport->setData('ID', $data['id']);
+        $transport->setData('Reference', $data['payment_ref']);
+        $transport->setData('Status', $data['status']);
+        $transport->setData('Payment method', $data['transaction_type']);
+        $transport->setData('Card type', $data['payment_details']['card_type']);
+        $transport->setData('Card number', $data['payment_details']['card_number']);
+        $transport->setData('Card holder', $data['payment_details']['card_holder']);
+        $transport->setData('SSN', $data['payment_details']['ssn']);
+        $transport->setData('Currency', strtoupper($data['currency']));
+        $transport->setData('Payment link', $data['href']);
+        $transport->setData('Created at', $data['created_at']);
+        $transport->setData('Processed at', $data['processed_at']);
 
         $transport = parent::_prepareSpecificInformation($transport);
 
