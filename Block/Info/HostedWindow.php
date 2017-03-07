@@ -31,6 +31,15 @@ class HostedWindow extends Info
      */
     protected $_template = 'Mondido_Mondido::info/hostedwindow.phtml';
 
+    /**
+     * Constructor
+     *
+     * @param \Magento\Framework\View\Element\Template\Context $context     Context
+     * @param \Mondido\Mondido\Model\Api\Transaction           $transaction Transaction API model
+     * @param array                                            $data        Data
+     *
+     * @return void
+     */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Mondido\Mondido\Model\Api\Transaction $transaction,
