@@ -118,4 +118,30 @@ class Config
 
         return $this->_scopeConfig->isSetFlag($configPath, $scope);
     }
+
+    /**
+     * Get allowed countries
+     *
+     * @return string
+     */
+    public function getAllowedCountries()
+    {
+        $configPath = 'general/country/allow';
+        $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE;
+
+        return $this->_scopeConfig->getValue($configPath, $scope);
+    }
+
+    /**
+     * Get default country
+     *
+     * @return string
+     */
+    public function getDefaultCountry()
+    {
+        $configPath = 'general/country/default';
+        $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+
+        return $this->_scopeConfig->getValue($configPath, $scope);
+    }
 }

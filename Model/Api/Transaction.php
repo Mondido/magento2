@@ -344,9 +344,20 @@ class Transaction extends Mondido
             'country_code' => $this->isoHelper->transform($shippingAddress->getCountryId())
         ];
 
+        $allowedCountries = $this->_config->getAllowedCountries();
+        $defaultCountry = $this->_config->getDefaultCountry();
+
         $data = [
             'user' => $paymentDetails,
-            'products' => $this->getItems($quote)
+            'products' => $this->getItems($quote),
+            'magento' => [
+                'general' => [
+                    'country' => [
+                        'allow' => $allowedCountries,
+                        'default' => $defaultCountry
+                    ]
+                ]
+            ]
         ];
 
         return $data;
