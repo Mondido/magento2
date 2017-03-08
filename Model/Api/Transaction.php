@@ -20,6 +20,7 @@ use Mondido\Mondido\Model\Config;
 use Magento\Store\Model\StoreManagerInterface;
 use Mondido\Mondido\Helper\Data;
 use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Quote\Model\ShippingMethodManagement;
 
 /**
  * Mondido transaction API model
@@ -47,13 +48,14 @@ class Transaction extends Mondido
     /**
      * Constructor
      *
-     * @param \Magento\Framework\HTTP\Adapter\Curl       $adapter         HTTP adapter
-     * @param \Mondido\Mondido\Model\Config              $config          Config object
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager    Store manager
-     * @param \Magento\Framework\UrlInterface            $urlBuilder      URL builder
-     * @param \Mondido\Mondido\Helper\Data               $helper          Data helper
-     * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository Quote repository
-     * @param \Mondido\Mondido\Helper\Iso                $isoHelper       ISO helper
+     * @param \Magento\Framework\HTTP\Adapter\Curl          $adapter                  HTTP adapter
+     * @param \Mondido\Mondido\Model\Config                 $config                   Config object
+     * @param \Magento\Store\Model\StoreManagerInterface    $storeManager             Store manager
+     * @param \Magento\Framework\UrlInterface               $urlBuilder               URL builder
+     * @param \Mondido\Mondido\Helper\Data                  $helper                   Data helper
+     * @param \Magento\Quote\Api\CartRepositoryInterface    $quoteRepository          Quote repository
+     * @param \Mondido\Mondido\Helper\Iso                   $isoHelper                ISO helper
+     * @param \Magento\Quote\Model\ShippingMethodManagement $shippingMethodManagement Shipping method management
      *
      * @return void
      */
@@ -64,7 +66,8 @@ class Transaction extends Mondido
         UrlInterface $urlBuilder,
         Data $helper,
         CartRepositoryInterface $quoteRepository,
-        Iso $isoHelper
+        Iso $isoHelper,
+        ShippingMethodManagement $shippingMethodManagement
     ) {
         $this->_adapter = $adapter;
         $this->_config = $config;
@@ -73,6 +76,7 @@ class Transaction extends Mondido
         $this->helper = $helper;
         $this->quoteRepository = $quoteRepository;
         $this->isoHelper = $isoHelper;
+        $this->shippingMethodManagement = $shippingMethodManagement;
     }
 
     /**
@@ -332,6 +336,25 @@ class Transaction extends Mondido
     {
         $shippingAddress = $quote->getShippingAddress('shipping');
 
+        $shippingMethods = $this->shippingMethodManagement->getList($quote->getId());
+
+        $shippingData = [];
+
+        foreach ($shippingMethods as $shippingMethod) {
+            $shippingData[] = [
+                'carrier_code' => $shippingMethod->getCarrierCode(),
+                'method_code' => $shippingMethod->getMethodCode(),
+                'carrier_title' => $shippingMethod->getCarrierTitle(),
+                'method_title' => $shippingMethod->getMethodTitle(),
+                'amount' => $shippingMethod->getAmount(),
+                'base_amount' => $shippingMethod->getBaseAmount(),
+                'available' => $shippingMethod->getAvailable(),
+                'error_message' => $shippingMethod->getErrorMessage(),
+                'price_excl_tax' => $shippingMethod->getPriceExclTax(),
+                'getPriceInclTax' => $shippingMethod->getPriceInclTax()
+            ];
+        }
+
         $paymentDetails = [
             'email' => $shippingAddress->getEmail(),
             'phone' => $shippingAddress->getTelephone(),
@@ -344,9 +367,27 @@ class Transaction extends Mondido
             'country_code' => $this->isoHelper->transform($shippingAddress->getCountryId())
         ];
 
+        $allowedCountries = $this->_config->getAllowedCountries();
+        $defaultCountry = $this->_config->getDefaultCountry();
+
         $data = [
             'user' => $paymentDetails,
-            'products' => $this->getItems($quote)
+            'products' => $this->getItems($quote),
+            'magento' => [
+                'edition' => $this->_config->getMagentoEdition(),
+                'version' => $this->_config->getMagentoVersion(),
+                'php' => phpversion(),
+                'module' => $this->_config->getModuleInformation(),
+                'configuration' => [
+                    'general' => [
+                        'country' => [
+                            'allow' => $allowedCountries,
+                            'default' => $defaultCountry
+                        ]
+                    ]
+                ],
+                'shipping_methods' => $shippingData
+            ]
         ];
 
         return $data;

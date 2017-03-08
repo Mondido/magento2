@@ -14,6 +14,8 @@
 namespace Mondido\Mondido\Model;
 
 use \Magento\Framework\App\Config\ScopeConfigInterface;
+use \Magento\Framework\App\ProductMetadataInterface;
+use \Magento\Framework\Module\ModuleListInterface;
 
 /**
  * Config model
@@ -32,13 +34,20 @@ class Config
     /**
      * Constructor
      *
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig Config
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig     Config
+     * @param \Magento\Framework\App\ProductMetadataInterface    $productMetadata Product metadata interface
+     * @param \Magento\Framework\Module\ModuleListInterface      $moduleList      Module list interface
      *
      * @return void
      */
-    public function __construct(ScopeConfigInterface $scopeConfig)
-    {
+    public function __construct(
+        ScopeConfigInterface $scopeConfig,
+        ProductMetadataInterface $productMetadata,
+        ModuleListInterface $moduleList
+    ) {
         $this->_scopeConfig = $scopeConfig;
+        $this->productMetadata = $productMetadata;
+        $this->moduleList = $moduleList;
     }
 
     /**
@@ -117,5 +126,60 @@ class Config
         $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
 
         return $this->_scopeConfig->isSetFlag($configPath, $scope);
+    }
+
+    /**
+     * Get allowed countries
+     *
+     * @return string
+     */
+    public function getAllowedCountries()
+    {
+        $configPath = 'general/country/allow';
+        $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE;
+
+        return $this->_scopeConfig->getValue($configPath, $scope);
+    }
+
+    /**
+     * Get default country
+     *
+     * @return string
+     */
+    public function getDefaultCountry()
+    {
+        $configPath = 'general/country/default';
+        $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+
+        return $this->_scopeConfig->getValue($configPath, $scope);
+    }
+
+    /**
+     * Get Magento version
+     *
+     * @return string
+     */
+    public function getMagentoVersion()
+    {
+        return $this->productMetadata->getVersion();
+    }
+    /**
+     * Get Magento edition
+     *
+     * @return string
+     */
+    public function getMagentoEdition()
+    {
+        return $this->productMetadata->getEdition();
+    }
+
+    /**
+     * Get module information
+     *
+     * @return array
+     */
+    public function getModuleInformation()
+    {
+        return $this->moduleList->getOne('Mondido_Mondido');
     }
 }
