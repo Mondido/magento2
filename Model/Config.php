@@ -34,9 +34,9 @@ class Config
     /**
      * Constructor
      *
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig         Config
-     * @param \Magento\Framework\App\ProductMetadataInterface    $productMetadata     Product metadata interface
-     * @param \Magento\Framework\Module\ModuleListInterface      $ModuleListInterface Module list interface
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig     Config
+     * @param \Magento\Framework\App\ProductMetadataInterface    $productMetadata Product metadata interface
+     * @param \Magento\Framework\Module\ModuleListInterface      $moduleList      Module list interface
      *
      * @return void
      */
