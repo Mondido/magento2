@@ -53,6 +53,11 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
 
         $quoteRepositoryMock = $this->getMockBuilder('Magento\Quote\Api\CartRepositoryInterface')->getMock();
 
+        $shippingMethodManagementMock = $this->getMockBuilder('Magento\Quote\Model\ShippingMethodManagement')->disableOriginalConstructor()->getMock();
+        $shippingMethodManagementMock->expects($this->once())
+            ->method('getList')
+            ->willReturn([]);
+
         $helperMock = $this->getMockBuilder('Mondido\Mondido\Helper\Data')
             ->disableOriginalConstructor()
             ->getMock();
@@ -98,7 +103,8 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
                 'urlBuilder' => $urlBuilderMock,
                 'helper' => $helperMock,
                 'quoteRepository' => $quoteRepositoryMock,
-                'isoHelper' => $isoHelperMock
+                'isoHelper' => $isoHelperMock,
+                'shippingMethodManagement' => $shippingMethodManagementMock
             ]
         );
     }
