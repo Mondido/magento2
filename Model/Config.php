@@ -34,12 +34,17 @@ class Config
     /**
      * Constructor
      *
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig Config
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig         Config
+     * @param \Magento\Framework\App\ProductMetadataInterface    $productMetadata     Product metadata interface
+     * @param \Magento\Framework\Module\ModuleListInterface      $ModuleListInterface Module list interface
      *
      * @return void
      */
-    public function __construct(ScopeConfigInterface $scopeConfig, ProductMetadataInterface $productMetadata, ModuleListInterface $moduleList)
-    {
+    public function __construct(
+        ScopeConfigInterface $scopeConfig,
+        ProductMetadataInterface $productMetadata,
+        ModuleListInterface $moduleList
+    ) {
         $this->_scopeConfig = $scopeConfig;
         $this->productMetadata = $productMetadata;
         $this->moduleList = $moduleList;
