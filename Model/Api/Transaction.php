@@ -207,6 +207,7 @@ class Transaction extends Mondido
      *
      * @param int|Magento\Quote\Model\Quote $quote    A quote object or ID
      * @param array                         $metadata An array with metadata
+     * @param boolean                       $merge    Whether or not to merge with existing metadata
      *
      * @return string|boolean
      */
