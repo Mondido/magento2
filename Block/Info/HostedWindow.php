@@ -76,6 +76,7 @@ class HostedWindow extends Info
         $transport->setData('Card type', $data['payment_details']['card_type']);
         $transport->setData('Card number', $data['payment_details']['card_number']);
         $transport->setData('Card holder', $data['payment_details']['card_holder']);
+        $transport->setData('MPI ref', $data['mpi_ref']);
         $transport->setData('SSN', $data['payment_details']['ssn']);
         $transport->setData('Currency', strtoupper($data['currency']));
         $transport->setData('Payment link', $data['href']);
