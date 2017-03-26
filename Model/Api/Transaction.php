@@ -214,7 +214,7 @@ class Transaction extends Mondido
     public function updateMetadata($quote, $metadata, $merge = true)
     {
         if (!is_object($quote)) {
-            $quote = $this->quoteRepository->getActive($quote);
+            $quote = $this->quoteRepository->get($quote);
         }
 
         $transaction = json_decode($quote->getMondidoTransaction());
