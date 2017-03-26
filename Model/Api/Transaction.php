@@ -236,7 +236,7 @@ class Transaction extends Mondido
     }
 
     /**
-     * Capture transaction
+     * Refund transaction
      *
      * @param \Magento\Sales\Model\Order $order  Order
      * @param float                      $amount Amount to capture
