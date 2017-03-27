@@ -21,6 +21,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Mondido\Mondido\Helper\Data;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Model\ShippingMethodManagement;
+use Psr\Log\LoggerInterface;
 
 /**
  * Mondido transaction API model
@@ -56,6 +57,7 @@ class Transaction extends Mondido
      * @param \Magento\Quote\Api\CartRepositoryInterface    $quoteRepository          Quote repository
      * @param \Mondido\Mondido\Helper\Iso                   $isoHelper                ISO helper
      * @param \Magento\Quote\Model\ShippingMethodManagement $shippingMethodManagement Shipping method management
+     * @param \Psr\Log\LoggerInterface                      $logger                   Logger interface
      *
      * @return void
      */
@@ -67,7 +69,8 @@ class Transaction extends Mondido
         Data $helper,
         CartRepositoryInterface $quoteRepository,
         Iso $isoHelper,
-        ShippingMethodManagement $shippingMethodManagement
+        ShippingMethodManagement $shippingMethodManagement,
+        LoggerInterface $logger
     ) {
         $this->_adapter = $adapter;
         $this->_config = $config;
@@ -77,6 +80,7 @@ class Transaction extends Mondido
         $this->quoteRepository = $quoteRepository;
         $this->isoHelper = $isoHelper;
         $this->shippingMethodManagement = $shippingMethodManagement;
+        $this->logger = $logger;
     }
 
     /**
@@ -199,12 +203,53 @@ class Transaction extends Mondido
     }
 
     /**
+     * Update metadata
+     *
+     * @param int|Magento\Quote\Model\Quote $quote    A quote object or ID
+     * @param array                         $metadata An array with metadata
+     * @param boolean                       $merge    Whether or not to merge with existing metadata
+     *
+     * @return string|boolean
+     */
+    public function updateMetadata($quote, $metadata, $merge = true)
+    {
+        if (!is_object($quote)) {
+            $quote = $this->quoteRepository->get($quote);
+        }
+
+        $transaction = json_decode($quote->getMondidoTransaction());
+
+        if (property_exists($transaction, 'id')) {
+            $id = $transaction->id;
+        } else {
+            return false;
+        }
+
+        $data = [];
+
+        if ($merge) {
+            $transaction = $this->show($id);
+
+            $transaction = json_decode($transaction, true);
+
+            $existingMetaData = $transaction['metadata'];
+            $data['metadata'] = array_merge_recursive($existingMetaData, $metadata);
+        } else {
+            $data['metadata'] = $metadata;
+        }
+
+        $method = 'PUT';
+
+        return $this->call($method, $this->resource, (string) $id, $data);
+    }
+
+    /**
      * Capture transaction
      *
      * @param \Magento\Sales\Model\Order $order  Order
      * @param float                      $amount Amount to capture
      *
-     * @return string
+     * @return string|boolean
      */
     public function capture(\Magento\Sales\Model\Order $order, $amount)
     {
@@ -236,7 +281,7 @@ class Transaction extends Mondido
     }
 
     /**
-     * Capture transaction
+     * Refund transaction
      *
      * @param \Magento\Sales\Model\Order $order  Order
      * @param float                      $amount Amount to capture
@@ -386,7 +431,10 @@ class Transaction extends Mondido
                         ]
                     ]
                 ],
-                'shipping_methods' => $shippingData
+                'shipping_methods' => $shippingData,
+                'quote' => [
+                    'entity_id' => $quote->getId()
+                ]
             ]
         ];
 

@@ -23,6 +23,7 @@ use Mondido\Mondido\Model\Api\Transaction;
 use Mondido\Mondido\Helper\Data;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
+use Magento\Newsletter\Model\Subscriber;
 
 /**
  * Payment action
@@ -81,6 +82,11 @@ class Index extends \Magento\Framework\App\Action\Action
     protected $orderSender;
 
     /**
+     * @var \Magento\Newsletter\Model\Subscriber
+     */
+    protected $subscriber;
+
+    /**
      * Constructor
      *
      * @param \Magento\Framework\App\Action\Context               $context           Context object
@@ -93,6 +99,7 @@ class Index extends \Magento\Framework\App\Action\Action
      * @param \Mondido\Mondido\Helper\Data                        $helper            Data helper
      * @param \Magento\Sales\Model\Order                          $order             Order model
      * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender       Order seder
+     * @param \Magento\Newsletter\Model\Subscriber                $subscriber        Subscriber model
      *
      * @return void
      */
@@ -106,7 +113,8 @@ class Index extends \Magento\Framework\App\Action\Action
         Transaction $transaction,
         Data $helper,
         Order $order,
-        OrderSender $orderSender
+        OrderSender $orderSender,
+        Subscriber $subscriber
     ) {
         parent::__construct($context);
 
@@ -119,6 +127,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->helper = $helper;
         $this->order = $order;
         $this->orderSender = $orderSender;
+        $this->subscriber = $subscriber;
     }
 
     /**
@@ -197,6 +206,18 @@ class Index extends \Magento\Framework\App\Action\Action
                             $quote->setCustomerGroupId(\Magento\Customer\Api\Data\GroupInterface::NOT_LOGGED_IN_ID);
                         }
 
+                        try {
+                            if ($transaction->metadata->newsletter === true) {
+                                if (property_exists($transaction, 'customer_ref') && $transaction->customer_ref) {
+                                    $this->subscriber->subscribeCustomerById($transaction->customer_ref);
+                                } else if (property_exists($transaction->metadata, 'email') && $transaction->metadata->email) {
+                                    $this->subscriber->subscribe($transaction->metadata->email);
+                                }
+                            }
+                        } catch (\Exception $e) {
+                            $this->logger->critical($e);
+                        }
+
                         $order = $this->quoteManagement->submit($quote);
                     } catch (\Magento\Framework\Exception\LocalizedException $e) {
                         $order = false;
@@ -220,7 +241,7 @@ class Index extends \Magento\Framework\App\Action\Action
                             $this->orderSender->send($order);
                             $order->setCanSendNewEmailFlag(false)->save();
                         } catch (\Exception $e) {
-                            $this->_logger->critical($e);
+                            $this->logger->critical($e);
                         }
                     }
                 }
