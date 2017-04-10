@@ -276,7 +276,6 @@ class Index extends \Magento\Framework\App\Action\Action
                         $quote->getPayment()->setAdditionalInformation('status', $data['status']);
 
                         $quote->collectTotals()->save();
-                        $quote->setCheckoutMethod('guest');
 
                         if ($quote->getCheckoutMethod() === 'guest') {
                             $quote->setCustomerId(null);
