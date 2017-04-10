@@ -63,6 +63,12 @@
                             <source_model>Mondido\Mondido\Model\Adminhtml\Source\PaymentAction</source_model>
                             <config_path>payment/mondido/payment_action</config_path>
                         </field>
+                        <field id="email" translate="label comment" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Email webhook failures to</label>
+                            <config_path>payment/mondido/email_webhook_failures_to</config_path>
+                            <validate>validate-email</validate>
+                            <comment><![CDATA[Emails will be sent if <strong>a)</strong> quote is inactive when Mondido tries to create the order in Magento, <strong>b)</strong> if the amount differs or <strong>c)</strong> if an exception is thrown when Magento tries to create the order.<br><br>The Customer Support email from Store Email Addresses configuration will be used a sender of the emails.]]></comment>
+                        </field>
                     </group>
                 </group>
             </group>
