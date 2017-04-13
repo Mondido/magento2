@@ -46,3 +46,4 @@ Partial capturing will be added in a future version when the Mondido API support
 ## Support
 
 Please, feel free to [create issues on our GitHub repository](https://github.com/Mondido/magento2/issues). Contact hello@mondido.com if you have specific problems for your account. 
+
