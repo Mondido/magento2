@@ -78,6 +78,15 @@ class HostedWindow extends Info
         $transport->setData('Card holder', $data['payment_details']['card_holder']);
         $transport->setData('MPI ref', $data['mpi_ref']);
         $transport->setData('SSN', $data['payment_details']['ssn']);
+
+        $gender = '';
+
+        if (strtolower($data['payment_details']['country_code']) == 'swe' && strtolower($data['payment_details']['segmentation']) == 'b2c' && $data['payment_details']['ssn']) {
+            $genderCheck = substr($data['payment_details']['ssn'], -2, 1);
+            $gender = ($genderCheck % 2) ? 'Male' : 'Female';
+        }
+
+        $transport->setData('Gender', $gender);
         $transport->setData('Currency', strtoupper($data['currency']));
         $transport->setData('Payment link', $data['href']);
         $transport->setData('Created at', $data['created_at']);

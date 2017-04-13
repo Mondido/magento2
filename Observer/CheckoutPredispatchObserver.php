@@ -70,8 +70,8 @@ class CheckoutPredispatchObserver implements ObserverInterface
 
         $customer = $quote->getCustomer();
 
-        $allowedCountries = explode(',', $this->scopeConfig->getValue('general/country/allow'));
-        $defaultCountry = $this->scopeConfig->getValue('general/country/default');
+        $allowedCountries = explode(',', $this->scopeConfig->getValue('general/country/allow', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE));
+        $defaultCountry = $this->scopeConfig->getValue('general/country/default', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         $forceDefaultCountry = true;
 

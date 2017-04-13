@@ -24,6 +24,8 @@ use Mondido\Mondido\Helper\Data;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Newsletter\Model\Subscriber;
+use Magento\Framework\Mail\Template\TransportBuilder;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
  * Payment action
@@ -87,6 +89,16 @@ class Index extends \Magento\Framework\App\Action\Action
     protected $subscriber;
 
     /**
+     * @var \Magento\Framework\Mail\Template\TransportBuilder
+     */
+    protected $transportBuilder;
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $scopeConfig;
+
+    /**
      * Constructor
      *
      * @param \Magento\Framework\App\Action\Context               $context           Context object
@@ -98,8 +110,10 @@ class Index extends \Magento\Framework\App\Action\Action
      * @param \Mondido\Mondido\Api\Transaction                    $transaction       Transaction API model
      * @param \Mondido\Mondido\Helper\Data                        $helper            Data helper
      * @param \Magento\Sales\Model\Order                          $order             Order model
-     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender       Order seder
+     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender       Order sender
      * @param \Magento\Newsletter\Model\Subscriber                $subscriber        Subscriber model
+     * @param \Magento\Framework\Mail\Template\TransportBuilder   $transportBuilder  Transport builder
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig       Scope config
      *
      * @return void
      */
@@ -114,7 +128,9 @@ class Index extends \Magento\Framework\App\Action\Action
         Data $helper,
         Order $order,
         OrderSender $orderSender,
-        Subscriber $subscriber
+        Subscriber $subscriber,
+        TransportBuilder $transportBuilder,
+        ScopeConfigInterface $scopeConfig
     ) {
         parent::__construct($context);
 
@@ -128,6 +144,8 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->order = $order;
         $this->orderSender = $orderSender;
         $this->subscriber = $subscriber;
+        $this->transportBuilder = $transportBuilder;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -138,6 +156,7 @@ class Index extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $data = $this->getRequest()->getPostValue();
+
         $this->logger->debug(var_export($data, true));
 
         $result = [];
@@ -160,10 +179,70 @@ class Index extends \Magento\Framework\App\Action\Action
                     $order = false;
                     $result['error'] = 'Quote is still active in Magento, please try again in a while.';
                     $resultJson->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_INTERNAL_ERROR);
+
+
+                    if ($this->scopeConfig->getValue('payment/mondido/email_webhook_failures_to', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
+                        $now = new \DateTime('NOW');
+                        $now = $now->getTimestamp();
+                        $quoteUpdatedAt = new \DateTime($quote->getUpdatedAt());
+                        $quoteUpdatedAt = $quoteUpdatedAt->getTimestamp();
+
+                        if ($now - $quoteUpdatedAt > 300) {
+                            $body = [];
+                            $body['notice'] = sprintf("Quote %s is still active in Magento and the order could not be created from the Mondido webhook. Try setting is_active to 0 for the quote in the Magento database, login to Mondido and force the webhook for transaction %s anew.", $quote->getId(), $data['id']);
+
+                            $emailData = new \Magento\Framework\DataObject();
+                            $emailData->setData($body);
+
+                            $transport = $this->transportBuilder
+                                ->setTemplateIdentifier('mondido_payment_webhook_notice')
+                                ->setTemplateOptions(
+                                    [
+                                        'area' => \Magento\Framework\App\Area::AREA_FRONTEND,
+                                        'store' => \Magento\Store\Model\Store::DEFAULT_STORE_ID,
+                                    ]
+                                )
+                                ->setTemplateVars(['data' => $emailData])
+                                ->setFrom([
+                                    'email' => $this->scopeConfig->getValue('trans_email/ident_support/email', \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
+                                    'name' => $this->scopeConfig->getValue('trans_email/ident_support/name', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)
+                                ])
+                                ->addTo($this->scopeConfig->getValue('payment/mondido/email_webhook_failures_to', \Magento\Store\Model\ScopeInterface::SCOPE_STORE))
+                                ->getTransport();
+
+                            $transport->sendMessage();
+                        }
+                    }
                 } else if ($data['amount'] !== $this->helper->formatNumber($quote->getBaseGrandTotal())) {
                     $order = false;
                     $result['error'] = 'Wrong amount';
                     $resultJson->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+
+                    if ($this->scopeConfig->getValue('payment/mondido/email_webhook_failures_to', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
+                        $body = [];
+                        $body['notice'] = sprintf("Quote %s has different amount than the transaction %s from Mondido. The order could not be created for that reason. Quote amount: %s. Transaction amount: %s.", $quote->getId(), $data['id'], $this->helper->formatNumber($quote->getBaseGrandTotal()), $data['amount']);
+
+                        $emailData = new \Magento\Framework\DataObject();
+                        $emailData->setData($body);
+
+                        $transport = $this->transportBuilder
+                            ->setTemplateIdentifier('mondido_payment_webhook_notice')
+                            ->setTemplateOptions(
+                                [
+                                    'area' => \Magento\Framework\App\Area::AREA_FRONTEND,
+                                    'store' => \Magento\Store\Model\Store::DEFAULT_STORE_ID,
+                                ]
+                            )
+                            ->setTemplateVars(['data' => $emailData])
+                            ->setFrom([
+                                'email' => $this->scopeConfig->getValue('trans_email/ident_support/email', \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
+                                'name' => $this->scopeConfig->getValue('trans_email/ident_support/name', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)
+                            ])
+                            ->addTo($this->scopeConfig->getValue('payment/mondido/email_webhook_failures_to', \Magento\Store\Model\ScopeInterface::SCOPE_STORE))
+                            ->getTransport();
+
+                        $transport->sendMessage();
+                    }
                 } else {
                     try {
                         $transactionJson = $this->transaction->show($data['id']);
@@ -197,7 +276,6 @@ class Index extends \Magento\Framework\App\Action\Action
                         $quote->getPayment()->setAdditionalInformation('status', $data['status']);
 
                         $quote->collectTotals()->save();
-                        $quote->setCheckoutMethod('guest');
 
                         if ($quote->getCheckoutMethod() === 'guest') {
                             $quote->setCustomerId(null);
@@ -224,6 +302,32 @@ class Index extends \Magento\Framework\App\Action\Action
                         $this->logger->debug($e);
                         $result['error'] = $e->getMessage();
                         $resultJson->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+
+                        if ($this->scopeConfig->getValue('payment/mondido/email_webhook_failures_to', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
+                            $body = [];
+                            $body['notice'] = sprintf("Quote %s could not be converted to an order. Error message from Magento:\n\n%s\n\nPlease make sure the Mondido transaction %s contains valid order information.", $quoteId, $e->getMessage(), $data['id']);
+
+                            $emailData = new \Magento\Framework\DataObject();
+                            $emailData->setData($body);
+
+                            $transport = $this->transportBuilder
+                                ->setTemplateIdentifier('mondido_payment_webhook_notice')
+                                ->setTemplateOptions(
+                                    [
+                                        'area' => \Magento\Framework\App\Area::AREA_FRONTEND,
+                                        'store' => \Magento\Store\Model\Store::DEFAULT_STORE_ID,
+                                    ]
+                                )
+                                ->setTemplateVars(['data' => $emailData])
+                                ->setFrom([
+                                    'email' => $this->scopeConfig->getValue('trans_email/ident_support/email', \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
+                                    'name' => $this->scopeConfig->getValue('trans_email/ident_support/name', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)
+                                ])
+                                ->addTo($this->scopeConfig->getValue('payment/mondido/email_webhook_failures_to', \Magento\Store\Model\ScopeInterface::SCOPE_STORE))
+                                ->getTransport();
+
+                            $transport->sendMessage();
+                        }
                     }
                 }
             }
