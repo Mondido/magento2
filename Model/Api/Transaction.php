@@ -232,8 +232,12 @@ class Transaction extends Mondido
 
             $transaction = json_decode($transaction, true);
 
-            $existingMetaData = $transaction['metadata'];
-            $data['metadata'] = array_merge_recursive($existingMetaData, $metadata);
+            if (array_key_exists('metadata', $transaction)) {
+                $existingMetaData = $transaction['metadata'];
+                $data['metadata'] = array_merge_recursive($existingMetaData, $metadata);
+            } else {
+                $data['metadata'] = $metadata;
+            }
         } else {
             $data['metadata'] = $metadata;
         }
