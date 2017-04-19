@@ -277,6 +277,8 @@ class Index extends \Magento\Framework\App\Action\Action
 
                         $quote->collectTotals()->save();
 
+                        $quote->setCheckoutMethod('guest');
+
                         if ($quote->getCheckoutMethod() === 'guest') {
                             $quote->setCustomerId(null);
                             $quote->setCustomerEmail($quote->getBillingAddress()->getEmail());
