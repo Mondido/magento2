@@ -219,6 +219,10 @@ class Transaction extends Mondido
 
         $transaction = json_decode($quote->getMondidoTransaction());
 
+        if (!is_object($transaction)) {
+            return false;
+        }
+
         if (property_exists($transaction, 'id')) {
             $id = $transaction->id;
         } else {
