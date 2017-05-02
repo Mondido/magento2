@@ -128,7 +128,7 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
         $result = $this->transaction->capture($order, $amount);
         $result = json_decode($result);
 
-        if (property_exists($result, 'code') && $result->code != 200) {
+        if (is_object($result) && property_exists($result, 'code') && $result->code != 200) {
             $message = sprintf(
                 __("Mondido returned error code %d: %s (%s)"),
                 $result->code,
