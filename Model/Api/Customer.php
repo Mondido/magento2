@@ -167,6 +167,20 @@ class Customer extends Mondido
     }
 
     /**
+     * Show customer
+     *
+     * @param int $id Customer ID
+     *
+     * @return string
+     */
+    public function show($id)
+    {
+        $method = 'GET';
+
+        return $this->call($method, $this->resource, (string) $id);
+    }
+
+    /**
      * Fetch Mondido ID using "ref" field (Magento customer ID)
      *
      * @param integer $referenceId Magento customer ID
