@@ -281,11 +281,11 @@ class Transaction extends Mondido
 
                 return $this->call($method, $this->resource, [$id, 'capture'], $data);
             } else {
-                return $currentTransactionJson;
+                return false;
             }
         }
 
-        return true;
+        return false;
     }
 
     /**

@@ -128,7 +128,7 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
         $result = $this->transaction->capture($order, $amount);
         $result = json_decode($result);
 
-        if (is_object($result) && property_exists($result, 'code') && $result->code != 200) {
+        if (is_object($result) && property_exists($result, 'code')) {
             $message = sprintf(
                 __("Mondido returned error code %d: %s (%s)"),
                 $result->code,
@@ -136,6 +136,10 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
                 $result->name
             );
             throw new \Magento\Framework\Exception\LocalizedException(__($message));
+        }
+
+        if (!is_object($result) || (is_object($result) && !property_exists($result, 'id'))) {
+            throw new \Magento\Framework\Exception\LocalizedException(__('Could not capture order online'));
         }
 
         $payment->setTransactionId($result->id)->setIsTransactionClosed(false);
