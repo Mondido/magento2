@@ -45,7 +45,7 @@ class CustomerSaveObserver implements \Magento\Framework\Event\ObserverInterface
         $customerObject = $observer->getCustomerDataObject();
 
         // Update or create the data
-        $customerApi->handle($customerObject);
+        // $customerApi->handle($customerObject);
 
         return $observer;
     }

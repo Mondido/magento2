@@ -20,6 +20,7 @@ use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\CartManagementInterface;
 use Mondido\Mondido\Helper\Iso;
 use Mondido\Mondido\Model\Api\Transaction;
+use Mondido\Mondido\Model\Api\Customer;
 use Mondido\Mondido\Helper\Data;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
@@ -69,6 +70,11 @@ class Index extends \Magento\Framework\App\Action\Action
     protected $transaction;
 
     /**
+     * @var \Mondido\Mondido\Model\Api\Customer
+     */
+    protected $customer;
+
+    /**
      * @var \Mondido\Mondido\Helper\Data
      */
     protected $helper;
@@ -107,7 +113,8 @@ class Index extends \Magento\Framework\App\Action\Action
      * @param \Magento\Quote\Api\CartRepositoryInterface          $quoteRepository   Cart repository interface
      * @param \Magento\Quote\Api\CartManagementInterface          $quoteManagement   Cart management interface
      * @param \Mondido\Mondido\Helper\Iso                         $isoHelper         ISO helper
-     * @param \Mondido\Mondido\Api\Transaction                    $transaction       Transaction API model
+     * @param \Mondido\Mondido\Model\Api\Transaction              $transaction       Transaction API model
+     * @param \Mondido\Mondido\Model\Api\Customer                 $customer          Customer API model
      * @param \Mondido\Mondido\Helper\Data                        $helper            Data helper
      * @param \Magento\Sales\Model\Order                          $order             Order model
      * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender       Order sender
@@ -125,6 +132,7 @@ class Index extends \Magento\Framework\App\Action\Action
         CartManagementInterface $quoteManagement,
         Iso $isoHelper,
         Transaction $transaction,
+        Customer $customer,
         Data $helper,
         Order $order,
         OrderSender $orderSender,
@@ -140,6 +148,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->quoteManagement = $quoteManagement;
         $this->isoHelper = $isoHelper;
         $this->transaction = $transaction;
+        $this->customer = $customer;
         $this->helper = $helper;
         $this->order = $order;
         $this->orderSender = $orderSender;
@@ -275,11 +284,23 @@ class Index extends \Magento\Framework\App\Action\Action
                         $quote->getPayment()->setAdditionalInformation('href', $data['href']);
                         $quote->getPayment()->setAdditionalInformation('status', $data['status']);
 
-                        $quote->collectTotals()->save();
+                        $quote->save();
 
-                        $quote->setCheckoutMethod('guest');
+                        if (is_object($transaction->customer) && property_exists($transaction->customer, 'id')) {
+                            $customerJson = $this->customer->show($transaction->customer->id);
+                            $customer = json_decode($customerJson, true);
 
-                        if ($quote->getCheckoutMethod() === 'guest') {
+                            $quote->setCustomerId($customer['ref']);
+                            $quote->setCustomerEmail($customer['metadata']['email']);
+                            $quote->setCustomerIsGuest(false);
+
+                            if (array_key_exists('group_id', $customer['metadata'])) {
+                                $quote->setCustomerGroupId($customer['metadata']['group_id']);
+                            } else {
+                                $quote->setCustomerGroupId(\Magento\Customer\Api\Data\GroupInterface::NOT_LOGGED_IN_ID);
+                            }
+                        } else {
+                            $quote->setCheckoutMethod('guest');
                             $quote->setCustomerId(null);
                             $quote->setCustomerEmail($quote->getBillingAddress()->getEmail());
                             $quote->setCustomerIsGuest(true);
