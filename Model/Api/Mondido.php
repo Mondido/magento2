@@ -13,6 +13,8 @@
 
 namespace Mondido\Mondido\Model\Api;
 
+use Psr\Log\LoggerInterface;
+
 /**
  * Abstract Mondido API model
  *
@@ -27,6 +29,18 @@ abstract class Mondido
     protected $_adapter;
 
     /**
+     * Constructor
+     *
+     * @param Psr\Log\LoggerInterface $logger Logger interface
+     *
+     * @return void
+     */
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
      * Call
      *
      * @param string $method   HTTP method
@@ -39,6 +53,11 @@ abstract class Mondido
     public function call($method, $resource, $params = null, $data = [])
     {
         $url = 'https://api.mondido.com/v1/' . $resource;
+
+        /**
+         * Reset any options potentially set from elsewhere
+         */
+        $this->_adapter->setOptions([]);
 
         if (is_string($params)) {
             $url .= "/$params";
@@ -82,6 +101,10 @@ abstract class Mondido
         }
 
         $userPwd = sprintf("%s:%s", $this->_config->getMerchantId(), $this->_config->getPassword());
+
+        $this->logger->debug($method);
+        $this->logger->debug($url);
+        $this->logger->debug(var_export($data, true));
 
         $this->_adapter->addOption(CURLOPT_USERPWD, $userPwd)
             ->addOption(CURLOPT_RETURNTRANSFER, 1)
