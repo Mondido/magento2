@@ -360,7 +360,7 @@ class Transaction extends Mondido
             $baseShippingAmount = $shippingAddress->getBaseShippingAmount();
 
             if ($baseShippingAmount > 0) {
-                $shippingVat = $baseShippingAmount / ($baseShippingAmount - $shippingAddress->getBaseShippingTaxAmount());
+                $shippingVat = (1 - ($baseShippingAmount - $shippingAddress->getBaseShippingTaxAmount()) / $baseShippingAmount) * 100;
             } else {
                 $shippingVat = 0;
             }
