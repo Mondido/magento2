@@ -69,28 +69,30 @@ class HostedWindow extends Info
 
         $data = json_decode($transaction, true);
 
-        $transport->setData('ID', $data['id']);
-        $transport->setData('Reference', $data['payment_ref']);
-        $transport->setData('Status', $data['status']);
-        $transport->setData('Payment method', $data['transaction_type']);
-        $transport->setData('Card type', $data['payment_details']['card_type']);
-        $transport->setData('Card number', $data['payment_details']['card_number']);
-        $transport->setData('Card holder', $data['payment_details']['card_holder']);
-        $transport->setData('MPI ref', $data['mpi_ref']);
-        $transport->setData('SSN', $data['payment_details']['ssn']);
+        if (array_key_exists('id', $data)) {
+            $transport->setData('ID', $data['id']);
+            $transport->setData('Reference', $data['payment_ref']);
+            $transport->setData('Status', $data['status']);
+            $transport->setData('Payment method', $data['transaction_type']);
+            $transport->setData('Card type', $data['payment_details']['card_type']);
+            $transport->setData('Card number', $data['payment_details']['card_number']);
+            $transport->setData('Card holder', $data['payment_details']['card_holder']);
+            $transport->setData('MPI ref', $data['mpi_ref']);
+            $transport->setData('SSN', $data['payment_details']['ssn']);
 
-        $gender = '';
+            $gender = '';
 
-        if (strtolower($data['payment_details']['country_code']) == 'swe' && strtolower($data['payment_details']['segmentation']) == 'b2c' && $data['payment_details']['ssn']) {
-            $genderCheck = substr($data['payment_details']['ssn'], -2, 1);
-            $gender = ($genderCheck % 2) ? 'Male' : 'Female';
+            if (strtolower($data['payment_details']['country_code']) == 'swe' && strtolower($data['payment_details']['segmentation']) == 'b2c' && $data['payment_details']['ssn']) {
+                $genderCheck = substr($data['payment_details']['ssn'], -2, 1);
+                $gender = ($genderCheck % 2) ? 'Male' : 'Female';
+            }
+
+            $transport->setData('Gender', $gender);
+            $transport->setData('Currency', strtoupper($data['currency']));
+            $transport->setData('Payment link', $data['href']);
+            $transport->setData('Created at', $data['created_at']);
+            $transport->setData('Processed at', $data['processed_at']);
         }
-
-        $transport->setData('Gender', $gender);
-        $transport->setData('Currency', strtoupper($data['currency']));
-        $transport->setData('Payment link', $data['href']);
-        $transport->setData('Created at', $data['created_at']);
-        $transport->setData('Processed at', $data['processed_at']);
 
         $transport = parent::_prepareSpecificInformation($transport);
 
