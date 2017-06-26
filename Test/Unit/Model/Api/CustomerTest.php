@@ -14,6 +14,8 @@
 namespace Mondido\Mondido\Test\Unit\Model\Api;
 
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManager;
+use Magento\Framework\App\Bootstrap;
+use Magento\Framework\App\Http;
 
 /**
  * CustomerTest
@@ -40,9 +42,11 @@ class CustomerTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
+        #Bootstrap::create(BP, $_SERVER)->createApplication(Http::class);
         $this->objectManager = new ObjectManager($this);
         $this->object = $this->objectManager->getObject(
-            'Mondido\Mondido\Model\Api\Customer'
+            'Mondido\Mondido\Model\Api\Customer',
+            []
         );
     }
 
