@@ -369,7 +369,7 @@ class Transaction extends Mondido
                 'artno' => $shippingAddress->getShippingMethod(),
                 'description' => $shippingAddress->getShippingDescription(),
                 'qty' => 1,
-                'amount' => $this->helper->formatNumber($baseShippingAmount),
+                'amount' => $this->helper->formatNumber($shippingAddress->getBaseShippingInclTax()),
                 'vat' => $this->helper->formatNumber($shippingVat),
                 'discount' => $this->helper->formatNumber($shippingAddress->getBaseShippingDiscountAmount())
             ];

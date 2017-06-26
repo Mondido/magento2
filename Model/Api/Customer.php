@@ -52,7 +52,9 @@ class Customer extends Mondido
         $this->_config = $config;
         $this->_storeManager = $storeManager;
         $this->urlBuilder = $urlBuilder;
-        $this->objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        if (!defined('PHPUNIT_MONDIDO_TESTSUITE')) {
+            $this->objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        }
     }
 
     /**
@@ -100,7 +102,7 @@ class Customer extends Mondido
             $this->resource,
             [],
             [
-                'ref' => $customer->getId(),
+                'ref'      => $customer->getId(),
                 'metadata' => json_encode($metaData)
             ]
         );
@@ -221,8 +223,8 @@ class Customer extends Mondido
         // Setup basic data
         $metaData = [
             'firstname' => $customer->getFirstname(),
-            'lastname' => $customer->getLastname(),
-            'email' => $customer->getEmail(),
+            'lastname'  => $customer->getLastname(),
+            'email'     => $customer->getEmail(),
         ];
 
         // Fields to use when looking at addresses
