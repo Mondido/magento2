@@ -246,6 +246,8 @@ class Transaction extends Mondido
             $data['metadata'] = $metadata;
         }
 
+        $data['process'] = 'false';
+        
         $method = 'PUT';
 
         return $this->call($method, $this->resource, (string) $id, $data);
