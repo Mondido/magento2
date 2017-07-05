@@ -113,6 +113,18 @@ class CheckoutPredispatchObserver implements ObserverInterface
                 $data = json_decode($response);
 
                 if (property_exists($data, 'id')) {
+
+                    /**
+                     * Remove the ever growing log events from the transaction response
+                     * to avoid hitting the 64k limit of the MySQL text field that will
+                     * hold the data
+                     */
+                    if (property_exists($data, 'log_events')) {
+                        $data->log_events = __("Please login to your Mondido account to see the log events.");
+                    }
+
+                    $response = json_encode($data);
+
                     $quote->setMondidoTransaction($response);
                     $quote->save();
                 } else {
