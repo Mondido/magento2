@@ -189,13 +189,18 @@ class Index extends \Magento\Framework\App\Action\Action
                     $result['error'] = 'Quote is still active in Magento, please try again in a while.';
                     $resultJson->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_INTERNAL_ERROR);
 
+                    $now = new \DateTime('NOW');
+                    $now = $now->getTimestamp();
+                    $quoteUpdatedAt = new \DateTime($quote->getUpdatedAt());
+                    $quoteUpdatedAt = $quoteUpdatedAt->getTimestamp();
+
+                    if ($this->scopeConfig->getValue('payment/mondido/deactivate_quote_on_callback', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
+                        if ($now - $quoteUpdatedAt > 120) {
+                            $quote->setIsActive(0)->save();
+                        }
+                    }
 
                     if ($this->scopeConfig->getValue('payment/mondido/email_webhook_failures_to', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
-                        $now = new \DateTime('NOW');
-                        $now = $now->getTimestamp();
-                        $quoteUpdatedAt = new \DateTime($quote->getUpdatedAt());
-                        $quoteUpdatedAt = $quoteUpdatedAt->getTimestamp();
-
                         if ($now - $quoteUpdatedAt > 300) {
                             $body = [];
                             $body['notice'] = sprintf("Quote %s is still active in Magento and the order could not be created from the Mondido webhook. Try setting is_active to 0 for the quote in the Magento database, login to Mondido and force the webhook for transaction %s anew.", $quote->getId(), $data['id']);

@@ -63,11 +63,17 @@
                             <source_model>Mondido\Mondido\Model\Adminhtml\Source\PaymentAction</source_model>
                             <config_path>payment/mondido/payment_action</config_path>
                         </field>
+                        <field id="deactivate_quote_on_callback" translate="label comment" type="select" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Deactivate quote on callback</label>
+                            <config_path>payment/mondido/deactivate_quote_on_callback</config_path>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <comment><![CDATA[The quote will be automatically deactivated if it's still active for some reason when Mondido makes a payment callback. An active quote can't be made to an order.<br><br>The feature has a treshold of 2 minutes.]]></comment>
+                        </field>
                         <field id="email" translate="label comment" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Email webhook failures to</label>
                             <config_path>payment/mondido/email_webhook_failures_to</config_path>
                             <validate>validate-email</validate>
-                            <comment><![CDATA[Emails will be sent if <strong>a)</strong> quote is inactive when Mondido tries to create the order in Magento, <strong>b)</strong> if the amount differs or <strong>c)</strong> if an exception is thrown when Magento tries to create the order.<br><br>The Customer Support email from Store Email Addresses configuration will be used a sender of the emails.]]></comment>
+                            <comment><![CDATA[Emails will be sent if <strong>a)</strong> quote is inactive when Mondido tries to create the order in Magento, <strong>b)</strong> if the amount differs or <strong>c)</strong> if an exception is thrown when Magento tries to create the order.<br><br>The Customer Support email from Store Email Addresses configuration will be used a sender of the emails.<br><br>The feature has a treshold of 5 minutes.]]></comment>
                         </field>
                     </group>
                 </group>
