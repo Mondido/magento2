@@ -14,6 +14,7 @@
 namespace Mondido\Mondido\Model\Api;
 
 use Magento\Framework\UrlInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Mondido transaction API model
@@ -39,6 +40,7 @@ class Customer extends Mondido
      * @param \Mondido\Mondido\Model\Config              $config       Config object
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager Store manager
      * @param \Magento\Framework\UrlInterface            $urlBuilder   URL builder
+     * @param Psr\Log\LoggerInterface                    $logger       Logger interface
      *
      * @return void
      */
@@ -46,12 +48,15 @@ class Customer extends Mondido
         \Magento\Framework\HTTP\Adapter\Curl $adapter,
         \Mondido\Mondido\Model\Config $config,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        UrlInterface $urlBuilder
+        UrlInterface $urlBuilder,
+        LoggerInterface $logger
     ) {
         $this->_adapter = $adapter;
         $this->_config = $config;
         $this->_storeManager = $storeManager;
         $this->urlBuilder = $urlBuilder;
+        $this->logger = $logger;
+
         if (!defined('PHPUNIT_MONDIDO_TESTSUITE')) {
             $this->objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         }
