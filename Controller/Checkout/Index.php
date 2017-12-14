@@ -34,7 +34,8 @@ class Index extends \Magento\Checkout\Controller\Onepage
         $configModel = $this->_objectManager->get('Mondido\Mondido\Model\Config');
 
         if (!$configModel->isActive()) {
-            $this->messageManager->addError(__('Mondido checkout is turned off.'));
+            $this->messageManager->addErrorMessage(__('Mondido checkout is turned off.'));
+
             return $this->resultRedirectFactory->create()->setPath('checkout/cart');
         }
 
@@ -46,7 +47,8 @@ class Index extends \Magento\Checkout\Controller\Onepage
         }
 
         if (!$this->_customerSession->isLoggedIn() && !$checkoutHelper->isAllowedGuestCheckout($quote)) {
-            $this->messageManager->addError(__('Guest checkout is disabled.'));
+            $this->messageManager->addErrorMessage(__('Guest checkout is disabled.'));
+
             return $this->resultRedirectFactory->create()->setPath('checkout/cart');
         }
 
@@ -55,6 +57,7 @@ class Index extends \Magento\Checkout\Controller\Onepage
         $this->getOnepage()->initCheckout();
         $resultPage = $this->resultPageFactory->create();
         $resultPage->getConfig()->getTitle()->set(__('Checkout'));
+
         return $resultPage;
     }
 }
