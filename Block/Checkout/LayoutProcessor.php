@@ -1,4 +1,15 @@
 <?php
+/**
+ * Mondido
+ *
+ * PHP version 5.6
+ *
+ * @category Mondido
+ * @package  Mondido_Mondido
+ * @author   Andreas Karlsson <andreas@kodbruket.se>
+ * @license  MIT License https://opensource.org/licenses/MIT
+ * @link     https://www.mondido.com
+ */
 
 namespace Mondido\Mondido\Block\Checkout;
 
@@ -7,9 +18,14 @@ use Magento\Checkout\Block\Checkout\AttributeMerger;
 use Magento\Framework\App\ObjectManager;
 use Magento\Store\Api\StoreResolverInterface;
 
-
 /**
  * Class LayoutProcessor
+ *
+ * @category Mondido
+ * @package  Mondido_Mondido
+ * @author   Robert Lord <robert@codepeak.se>
+ * @license  MIT License https://opensource.org/licenses/MIT
+ * @link     https://www.mondido.com
  */
 class LayoutProcessor implements \Magento\Checkout\Block\Checkout\LayoutProcessorInterface
 {
@@ -49,9 +65,11 @@ class LayoutProcessor implements \Magento\Checkout\Block\Checkout\LayoutProcesso
     private $shippingConfig;
 
     /**
-     * @param \Magento\Customer\Model\AttributeMetadataDataProvider $attributeMetadataDataProvider
-     * @param \Magento\Ui\Component\Form\AttributeMapper $attributeMapper
-     * @param AttributeMerger $merger
+     * LayoutProcessor constructor.
+     *
+     * @param \Magento\Customer\Model\AttributeMetadataDataProvider $attributeMetadataDataProvider Attribute Metadata Data Provider
+     * @param \Magento\Ui\Component\Form\AttributeMapper            $attributeMapper               Attribute mapper
+     * @param AttributeMerger                                       $merger                        Merger
      */
     public function __construct(
         \Magento\Customer\Model\AttributeMetadataDataProvider $attributeMetadataDataProvider,
@@ -72,6 +90,7 @@ class LayoutProcessor implements \Magento\Checkout\Block\Checkout\LayoutProcesso
         if (!is_object($this->options)) {
             $this->options = ObjectManager::getInstance()->get(\Magento\Customer\Model\Options::class);
         }
+
         return $this->options;
     }
 
@@ -98,14 +117,16 @@ class LayoutProcessor implements \Magento\Checkout\Block\Checkout\LayoutProcesso
                 $elements[$code]['label'] = __($label);
             }
         }
+
         return $elements;
     }
 
     /**
      * Convert elements(like prefix and suffix) from inputs to selects when necessary
      *
-     * @param array $elements address attributes
+     * @param array $elements            address attributes
      * @param array $attributesToConvert fields and their callbacks
+     *
      * @return array
      */
     private function convertElementsToSelect($elements, $attributesToConvert)
@@ -136,7 +157,8 @@ class LayoutProcessor implements \Magento\Checkout\Block\Checkout\LayoutProcesso
     /**
      * Process js Layout of block
      *
-     * @param array $jsLayout
+     * @param array $jsLayout Array with js layout
+     *
      * @return array
      */
     public function process($jsLayout)
@@ -149,8 +171,10 @@ class LayoutProcessor implements \Magento\Checkout\Block\Checkout\LayoutProcesso
         $elements = $this->getAddressAttributes();
         $elements = $this->convertElementsToSelect($elements, $attributesToConvert);
 
-        if (isset($jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']
-            ['step-config']['children']['shipping-rates-validation']['children'])) {
+        if (isset(
+            $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']
+            ['step-config']['children']['shipping-rates-validation']['children']
+        )) {
             $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']
             ['step-config']['children']['shipping-rates-validation']['children'] =
                 $this->processShippingChildrenComponents(
@@ -159,8 +183,10 @@ class LayoutProcessor implements \Magento\Checkout\Block\Checkout\LayoutProcesso
                 );
         }
 
-        if (isset($jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']
-            ['children']['shippingAddress']['children']['shipping-address-fieldset']['children'])) {
+        if (isset(
+            $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']
+            ['children']['shippingAddress']['children']['shipping-address-fieldset']['children']
+        )) {
             $fields = $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']
             ['children']['shippingAddress']['children']['shipping-address-fieldset']['children'];
             $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']
@@ -171,13 +197,15 @@ class LayoutProcessor implements \Magento\Checkout\Block\Checkout\LayoutProcesso
                 $fields
             );
         }
+
         return $jsLayout;
     }
 
     /**
      * Process shipping configuration to exclude inactive carriers.
      *
-     * @param array $shippingRatesLayout
+     * @param array $shippingRatesLayout Shipping rates layout
+     *
      * @return array
      */
     private function processShippingChildrenComponents($shippingRatesLayout)
@@ -191,13 +219,16 @@ class LayoutProcessor implements \Magento\Checkout\Block\Checkout\LayoutProcesso
                 unset($shippingRatesLayout[$carrierName]);
             }
         }
+
         return $shippingRatesLayout;
     }
 
     /**
      * Appends billing address form component to payment layout
-     * @param array $paymentLayout
-     * @param array $elements
+     *
+     * @param array $paymentLayout Payment layout
+     * @param array $elements      Elements
+     *
      * @return array
      */
     private function processPaymentChildrenComponents(array $paymentLayout, array $elements)
@@ -236,7 +267,8 @@ class LayoutProcessor implements \Magento\Checkout\Block\Checkout\LayoutProcesso
      * Inject billing address component into every payment component
      *
      * @param array $configuration list of payment components
-     * @param array $elements attributes that must be displayed in address form
+     * @param array $elements      attributes that must be displayed in address form
+     *
      * @return array
      */
     private function processPaymentConfiguration(array &$configuration, array $elements)
@@ -258,24 +290,25 @@ class LayoutProcessor implements \Magento\Checkout\Block\Checkout\LayoutProcesso
     /**
      * Gets billing address component details
      *
-     * @param string $paymentCode
-     * @param array $elements
+     * @param string $paymentCode Payment code
+     * @param array  $elements    Elements
+     *
      * @return array
      */
     private function getBillingAddressComponent($paymentCode, $elements)
     {
         return [
-            'component' => 'Magento_Checkout/js/view/billing-address',
-            'displayArea' => 'billing-address-form-' . $paymentCode,
-            'provider' => 'checkoutProvider',
-            'deps' => 'checkoutProvider',
+            'component'       => 'Magento_Checkout/js/view/billing-address',
+            'displayArea'     => 'billing-address-form-' . $paymentCode,
+            'provider'        => 'checkoutProvider',
+            'deps'            => 'checkoutProvider',
             'dataScopePrefix' => 'billingAddress' . $paymentCode,
-            'sortOrder' => 1,
-            'children' => [
+            'sortOrder'       => 1,
+            'children'        => [
                 'form-fields' => [
-                    'component' => 'uiComponent',
+                    'component'   => 'uiComponent',
                     'displayArea' => 'additional-fieldsets',
-                    'children' => $this->merger->merge(
+                    'children'    => $this->merger->merge(
                         $elements,
                         'checkoutProvider',
                         'billingAddress' . $paymentCode,
@@ -283,41 +316,41 @@ class LayoutProcessor implements \Magento\Checkout\Block\Checkout\LayoutProcesso
                             'country_id' => [
                                 'sortOrder' => 115,
                             ],
-                            'region' => [
+                            'region'     => [
                                 'visible' => false,
                             ],
-                            'region_id' => [
-                                'component' => 'Magento_Ui/js/form/element/region',
-                                'config' => [
-                                    'template' => 'ui/form/field',
+                            'region_id'  => [
+                                'component'  => 'Magento_Ui/js/form/element/region',
+                                'config'     => [
+                                    'template'    => 'ui/form/field',
                                     'elementTmpl' => 'ui/form/element/select',
                                     'customEntry' => 'billingAddress' . $paymentCode . '.region',
                                 ],
                                 'validation' => [
                                     'required-entry' => true,
                                 ],
-                                'filterBy' => [
+                                'filterBy'   => [
                                     'target' => '${ $.provider }:${ $.parentScope }.country_id',
-                                    'field' => 'country_id',
+                                    'field'  => 'country_id',
                                 ],
                             ],
-                            'postcode' => [
-                                'component' => 'Magento_Ui/js/form/element/post-code',
+                            'postcode'   => [
+                                'component'  => 'Magento_Ui/js/form/element/post-code',
                                 'validation' => [
                                     'required-entry' => true,
                                 ],
                             ],
-                            'company' => [
+                            'company'    => [
                                 'validation' => [
                                     'min_text_length' => 0,
                                 ],
                             ],
-                            'fax' => [
+                            'fax'        => [
                                 'validation' => [
                                     'min_text_length' => 0,
                                 ],
                             ],
-                            'telephone' => [
+                            'telephone'  => [
                                 'config' => [
                                     'tooltip' => [
                                         'description' => __('For delivery questions.'),
