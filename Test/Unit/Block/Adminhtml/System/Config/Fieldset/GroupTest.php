@@ -13,7 +13,7 @@
 
 namespace Mondido\Mondido\Test\Unit\Block\Adminhtml\System\Config\Fieldset;
 
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManager;
+use Mondido\Mondido\Test\Unit\MondidoObjectManager as ObjectManager;
 
 /**
  * GroupTest
@@ -24,12 +24,15 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManager;
  * @license  MIT License https://opensource.org/licenses/MIT
  * @link     https://www.mondido.com
  */
-class GroupTest extends \PHPUnit_Framework_TestCase
+class GroupTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @var
+     */
     protected $object;
 
     /**
-     * @var \Magento\Framework\TestFramework\Unit\Helper\ObjectManager
+     * @var \Mondido\Mondido\Test\Unit\MondidoObjectManager
      */
     protected $objectManager;
 
