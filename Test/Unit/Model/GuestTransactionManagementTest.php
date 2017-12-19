@@ -60,7 +60,7 @@ class GuestTransactionManagementTest extends \PHPUnit\Framework\TestCase
      */
     public function testExecute()
     {
-        #$this->assertEquals(get_class($this->object), 'Mondido\Mondido\Model\GuestTransactionManagement');
+        // $this->assertEquals(get_class($this->object), 'Mondido\Mondido\Model\GuestTransactionManagement');
     }
 
     /**

@@ -60,7 +60,7 @@ class SuccessTest extends \PHPUnit\Framework\TestCase
      */
     public function testExecute()
     {
-        #$this->assertEquals(get_class($this->object), 'Mondido\Mondido\Controller\Checkout\Success');
+        // $this->assertEquals(get_class($this->object), 'Mondido\Mondido\Controller\Checkout\Success');
     }
 
     /**

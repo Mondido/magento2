@@ -60,7 +60,7 @@ class CheckoutPredispatchObserverTest extends \PHPUnit\Framework\TestCase
      */
     public function testExecute()
     {
-        #$this->assertEquals(get_class($this->object), 'Mondido\Mondido\Observer\CheckoutPredispatchObserver');
+        // $this->assertEquals(get_class($this->object), 'Mondido\Mondido\Observer\CheckoutPredispatchObserver');
     }
 
     /**

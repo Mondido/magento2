@@ -60,7 +60,7 @@ class RedirectTest extends \PHPUnit\Framework\TestCase
      */
     public function testExecute()
     {
-        #$this->assertEquals(get_class($this->object), 'Mondido\Mondido\Controller\Checkout\Redirect');
+        // $this->assertEquals(get_class($this->object), 'Mondido\Mondido\Controller\Checkout\Redirect');
     }
 
     /**

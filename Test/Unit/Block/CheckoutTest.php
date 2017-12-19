@@ -63,7 +63,7 @@ class CheckoutTest extends \PHPUnit\Framework\TestCase
      */
     public function testExecute()
     {
-        #$this->assertEquals(get_class($this->object), 'Mondido\Mondido\Block\Checkout');
+        // $this->assertEquals(get_class($this->object), 'Mondido\Mondido\Block\Checkout');
     }
 
     /**

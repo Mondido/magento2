@@ -60,7 +60,7 @@ class HostedWindowTest extends \PHPUnit\Framework\TestCase
      */
     public function testExecute()
     {
-        #$this->assertEquals(get_class($this->object), 'Mondido\Mondido\Model\HostedWindow');
+        // $this->assertEquals(get_class($this->object), 'Mondido\Mondido\Model\HostedWindow');
     }
 
     /**

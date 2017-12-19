@@ -60,7 +60,7 @@ class ErrorTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecute()
     {
-        #$this->assertEquals(get_class($this->object), 'Mondido\Mondido\Controller\Checkout\Error');
+        // $this->assertEquals(get_class($this->object), 'Mondido\Mondido\Controller\Checkout\Error');
     }
 
     /**

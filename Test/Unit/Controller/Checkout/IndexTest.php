@@ -60,7 +60,7 @@ class IndexTest extends \PHPUnit\Framework\TestCase
      */
     public function testExecute()
     {
-        #$this->assertEquals(get_class($this->object), 'Mondido\Mondido\Controller\Checkout\Index');
+        // $this->assertEquals(get_class($this->object), 'Mondido\Mondido\Controller\Checkout\Index');
     }
 
     /**
