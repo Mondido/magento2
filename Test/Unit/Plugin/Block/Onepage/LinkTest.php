@@ -13,7 +13,7 @@
 
 namespace Mondido\Mondido\Test\Unit\Plugin\Block\Onepage;
 
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManager;
+use Mondido\Mondido\Test\Unit\MondidoObjectManager as ObjectManager;
 
 /**
  * LinkTest
@@ -24,7 +24,7 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManager;
  * @license  MIT License https://opensource.org/licenses/MIT
  * @link     https://www.mondido.com
  */
-class LinkTest extends \PHPUnit_Framework_TestCase
+class LinkTest extends \PHPUnit\Framework\TestCase
 {
     protected $object;
 

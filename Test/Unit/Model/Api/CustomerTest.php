@@ -13,7 +13,7 @@
 
 namespace Mondido\Mondido\Test\Unit\Model\Api;
 
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManager;
+use Mondido\Mondido\Test\Unit\MondidoObjectManager as ObjectManager;
 use Magento\Framework\App\Bootstrap;
 use Magento\Framework\App\Http;
 
@@ -26,7 +26,7 @@ use Magento\Framework\App\Http;
  * @license  MIT License https://opensource.org/licenses/MIT
  * @link     https://www.mondido.com
  */
-class CustomerTest extends \PHPUnit_Framework_TestCase
+class CustomerTest extends \PHPUnit\Framework\TestCase
 {
     protected $object;
 

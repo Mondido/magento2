@@ -13,7 +13,7 @@
 
 namespace Mondido\Mondido\Test\Unit\Controller\Refund;
 
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
+use Mondido\Mondido\Test\Unit\MondidoObjectManager as ObjectManager;
 use Magento\TestFramework\Request;
 
 /**
@@ -25,7 +25,7 @@ use Magento\TestFramework\Request;
  * @license  MIT License https://opensource.org/licenses/MIT
  * @link     https://www.mondido.com
  */
-class IndexTest extends \PHPUnit_Framework_TestCase
+class IndexTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var \Mondido\Mondido\Controller\Refund\Index
