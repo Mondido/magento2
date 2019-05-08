@@ -13,7 +13,7 @@
 
 namespace Mondido\Mondido\Test\Unit\Model\Adminhtml\Source;
 
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManager;
+use Mondido\Mondido\Test\Unit\MondidoObjectManager as ObjectManager;
 
 /**
  * PaymentActionTest
@@ -24,7 +24,7 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManager;
  * @license  MIT License https://opensource.org/licenses/MIT
  * @link     https://www.mondido.com
  */
-class PaymentActionTest extends \PHPUnit_Framework_TestCase
+class PaymentActionTest extends \PHPUnit\Framework\TestCase
 {
     protected $object;
 

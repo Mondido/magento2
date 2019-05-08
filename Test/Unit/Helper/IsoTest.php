@@ -13,7 +13,7 @@
 
 namespace Mondido\Mondido\Test\Unit\Helper;
 
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManager;
+use Mondido\Mondido\Test\Unit\MondidoObjectManager as ObjectManager;
 
 /**
  * Data helper test
@@ -24,7 +24,7 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManager;
  * @license  MIT License https://opensource.org/licenses/MIT
  * @link     https://www.mondido.com
  */
-class IsoTest extends \PHPUnit_Framework_TestCase
+class IsoTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var \Mondido\Mondido\Helper\Iso
