@@ -14,6 +14,7 @@
 namespace Mondido\Mondido\Model;
 
 use Magento\Payment\Model\InfoInterface;
+use Magento\Directory\Helper\Data as DirectoryHelper;
 
 /**
  * Hosted Window model
@@ -36,12 +37,12 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * @var string
      */
-    protected $_formBlockType = 'Magento\OfflinePayments\Block\Form\Checkmo';
+    protected $_formBlockType = \Magento\OfflinePayments\Block\Form\Checkmo::class;
 
     /**
      * @var string
      */
-    protected $_infoBlockType = 'Mondido\Mondido\Block\Info\HostedWindow';
+    protected $_infoBlockType = \Mondido\Mondido\Block\Info\HostedWindow::class;
 
     /**
      * Payment Method feature
@@ -86,6 +87,52 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
     protected $transaction;
 
     /**
+     * HostedWindow constructor.
+     *
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory
+     * @param \Magento\Payment\Helper\Data $paymentData
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Payment\Model\Method\Logger $logger
+     * @param Api\Transaction $transaction
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param array $data
+     * @param DirectoryHelper|null $directory
+     */
+    public function __construct(
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
+        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
+        \Magento\Payment\Helper\Data $paymentData,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Payment\Model\Method\Logger $logger,
+        \Mondido\Mondido\Model\Api\Transaction $transaction,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        array $data = [],
+        DirectoryHelper $directory = null
+    ) {
+        $this->transaction = $transaction;
+        parent::__construct(
+            $context,
+            $registry,
+            $extensionFactory,
+            $customAttributeFactory,
+            $paymentData,
+            $scopeConfig,
+            $logger,
+            $resource,
+            $resourceCollection,
+            $data,
+            $directory
+        );
+    }
+
+    /**
      * Authorize
      *
      * @param \Magento\Framework\DataObject|InfoInterface $payment Payment
@@ -121,9 +168,6 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
      */
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $this->transaction = $objectManager->get('Mondido\Mondido\Model\Api\Transaction');
-
         $order = $payment->getOrder();
         $result = $this->transaction->capture($order, $amount);
         $result = json_decode($result);
@@ -167,9 +211,6 @@ class HostedWindow extends \Magento\Payment\Model\Method\AbstractMethod
                 __('We can\'t issue a refund transaction because there is no capture transaction.')
             );
         }
-
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $this->transaction = $objectManager->get('Mondido\Mondido\Model\Api\Transaction');
 
         $order = $payment->getOrder();
 

@@ -36,25 +36,31 @@ class CheckoutPredispatchObserver implements ObserverInterface
     protected $scopeConfig;
 
     /**
-     * Constructor
+     * @var \Magento\Framework\UrlInterface
+     */
+    protected $urlInterface;
+
+    /**
+     * CheckoutPredispatchObserver constructor.
      *
-     * @param \Mondido\Mondido\Model\Api\Transaction             $transaction    Transaction API model
-     * @param \Magento\Framework\Message\ManagerInterface        $messageManager Message manager
-     * @param \Magento\Customer\Model\AddressFactory             $addressFactory Cusomter address factory
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig    Scope config
-     *
-     * @return void
+     * @param Transaction $transaction
+     * @param ManagerInterface $messageManager
+     * @param AddressFactory $addressFactory
+     * @param ScopeConfigInterface $scopeConfig
+     * @param \Magento\Framework\UrlInterface $urlInterface
      */
     public function __construct(
         Transaction $transaction,
         ManagerInterface $messageManager,
         AddressFactory $addressFactory,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\UrlInterface $urlInterface
     ) {
         $this->transaction = $transaction;
         $this->messageManager = $messageManager;
         $this->addressFactory = $addressFactory;
         $this->scopeConfig = $scopeConfig;
+        $this->urlInterface = $urlInterface;
     }
 
     /**
@@ -70,8 +76,17 @@ class CheckoutPredispatchObserver implements ObserverInterface
 
         $customer = $quote->getCustomer();
 
-        $allowedCountries = explode(',', $this->scopeConfig->getValue('general/country/allow', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE));
-        $defaultCountry = $this->scopeConfig->getValue('general/country/default', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $allowedCountries = explode(
+            ',',
+            $this->scopeConfig->getValue(
+                'general/country/allow',
+                \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE
+            )
+        );
+        $defaultCountry = $this->scopeConfig->getValue(
+            'general/country/default',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
 
         $forceDefaultCountry = true;
 
@@ -135,10 +150,7 @@ class CheckoutPredispatchObserver implements ObserverInterface
                         $data->name
                     );
 
-                    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-                    $request = $objectManager->get('Magento\Framework\App\Request\Http');
-                    $urlInterface = $objectManager->get('Magento\Framework\UrlInterface');
-                    $url = $urlInterface->getUrl('checkout/cart');
+                    $url = $this->urlInterface->getUrl('checkout/cart');
 
                     $this->messageManager->addError(__($message));
 

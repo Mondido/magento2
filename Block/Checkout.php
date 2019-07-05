@@ -24,6 +24,7 @@ namespace Mondido\Mondido\Block;
  */
 class Checkout extends \Magento\Checkout\Block\Onepage
 {
+    //phpcs:disable
     /**
      * Constructor
      *
@@ -44,4 +45,5 @@ class Checkout extends \Magento\Checkout\Block\Onepage
     ) {
         parent::__construct($context, $formKey, $configProvider, $layoutProcessors, $data);
     }
+    //phpcs:enable
 }

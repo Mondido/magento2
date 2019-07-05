@@ -24,6 +24,7 @@ namespace Mondido\Mondido\Block\Adminhtml\System\Config\Fieldset;
  */
 class Group extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
+    //phpcs:disable
     /**
      * Constructor
      *
@@ -42,6 +43,7 @@ class Group extends \Magento\Config\Block\System\Config\Form\Fieldset
     ) {
         parent::__construct($context, $authSession, $jsHelper, $data);
     }
+    //phpcs:enable
 
     /**
      * Is collapse state

@@ -82,7 +82,9 @@ class HostedWindow extends Info
 
             $gender = '';
 
-            if (strtolower($data['payment_details']['country_code']) == 'swe' && strtolower($data['payment_details']['segmentation']) == 'b2c' && $data['payment_details']['ssn']) {
+            if (strtolower($data['payment_details']['country_code']) == 'swe' &&
+                strtolower($data['payment_details']['segmentation']) == 'b2c' &&
+                $data['payment_details']['ssn']) {
                 $genderCheck = substr($data['payment_details']['ssn'], -2, 1);
                 $gender = ($genderCheck % 2) ? 'Male' : 'Female';
             }

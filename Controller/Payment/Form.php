@@ -45,7 +45,7 @@ class Form extends \Magento\Framework\App\Action\Action
 
         $this->resultJsonFactory = $resultJsonFactory;
     }
-
+    //phpcs:disable
     /**
      * Execute
      *
@@ -54,4 +54,5 @@ class Form extends \Magento\Framework\App\Action\Action
     public function execute()
     {
     }
+    //phpcs:enable
 }

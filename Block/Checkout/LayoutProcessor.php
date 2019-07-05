@@ -67,8 +67,8 @@ class LayoutProcessor implements \Magento\Checkout\Block\Checkout\LayoutProcesso
     /**
      * LayoutProcessor constructor.
      *
-     * @param \Magento\Customer\Model\AttributeMetadataDataProvider $attributeMetadataDataProvider Attribute Metadata Data Provider
-     * @param \Magento\Ui\Component\Form\AttributeMapper            $attributeMapper               Attribute mapper
+     * @param \Magento\Customer\Model\AttributeMetadataDataProvider $attributeMetadataDataProvider Atr Metadata Provider
+     * @param \Magento\Ui\Component\Form\AttributeMapper            $attributeMapper               Atr mapper
      * @param AttributeMerger                                       $merger                        Merger
      */
     public function __construct(
@@ -136,7 +136,7 @@ class LayoutProcessor implements \Magento\Checkout\Block\Checkout\LayoutProcesso
             if (!in_array($code, $codes)) {
                 continue;
             }
-            $options = call_user_func($attributesToConvert[$code]);
+            $options = $attributesToConvert[$code]();
             if (!is_array($options)) {
                 continue;
             }

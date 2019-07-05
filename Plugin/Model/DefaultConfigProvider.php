@@ -47,7 +47,6 @@ class DefaultConfigProvider
      *
      * @param \Magento\Checkout\Model\DefaultConfigProvider $subject Default config provider model
      * @param string                                        $result  The original result from the method in $subject
-     * 
      * @return string
      */
     public function afterGetCheckoutUrl(\Magento\Checkout\Model\DefaultConfigProvider $subject, $result)
@@ -57,5 +56,5 @@ class DefaultConfigProvider
         }
 
         return $this->urlBuilder->getUrl('mondido/checkout');
-    } 
+    }
 }
