@@ -171,6 +171,10 @@ class LayoutProcessor implements \Magento\Checkout\Block\Checkout\LayoutProcesso
         $elements = $this->getAddressAttributes();
         $elements = $this->convertElementsToSelect($elements, $attributesToConvert);
 
+        if (!isset($jsLayout['components']['checkout']['children']['steps']['children']['shipping-step'])) {
+            $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step'] = [];
+        }
+
         if (isset(
             $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']
             ['step-config']['children']['shipping-rates-validation']['children']
