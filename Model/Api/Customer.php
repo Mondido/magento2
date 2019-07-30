@@ -34,6 +34,11 @@ class Customer extends Mondido
     protected $objectManager;
 
     /**
+     * @var \Magento\Customer\Model\AddressFactory
+     */
+    protected $addressFactory;
+
+    /**
      * Constructor
      *
      * @param \Magento\Framework\HTTP\Adapter\Curl       $adapter      HTTP adapter
@@ -49,6 +54,7 @@ class Customer extends Mondido
         \Mondido\Mondido\Model\Config $config,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         UrlInterface $urlBuilder,
+        \Magento\Customer\Model\AddressFactory $addressFactory,
         LoggerInterface $logger
     ) {
         $this->_adapter = $adapter;
@@ -56,6 +62,7 @@ class Customer extends Mondido
         $this->_storeManager = $storeManager;
         $this->urlBuilder = $urlBuilder;
         $this->logger = $logger;
+        $this->addressFactory = $addressFactory;
 
         if (!defined('PHPUNIT_MONDIDO_TESTSUITE')) {
             $this->objectManager = \Magento\Framework\App\ObjectManager::getInstance();
@@ -249,9 +256,8 @@ class Customer extends Mondido
 
         // Add billing address
         if ($customer->getDefaultBilling()) {
-            $billingAddress = $this->objectManager
-                ->create('Magento\Customer\Model\Address')
-                ->load($customer->getDefaultBilling());
+            $billingAddress = $this->addressFactory->create();
+            $billingAddress->load($customer->getDefaultBilling());
             if ($billingAddress && $billingAddress->getId()) {
                 foreach ($addressFields as $fieldKey) {
                     $metaData['billing_' . $fieldKey] = $billingAddress->getData($fieldKey);
@@ -261,9 +267,8 @@ class Customer extends Mondido
 
         // Add shipping address
         if ($customer->getDefaultShipping()) {
-            $shippingAddress = $this->objectManager
-                ->create('Magento\Customer\Model\Address')
-                ->load($customer->getDefaultShipping());
+            $shippingAddress = $this->addressFactory->create();
+            $shippingAddress->load($customer->getDefaultShipping());
             if ($shippingAddress && $shippingAddress->getId()) {
                 foreach ($addressFields as $fieldKey) {
                     $metaData['shipping_' . $fieldKey] = $shippingAddress->getData($fieldKey);

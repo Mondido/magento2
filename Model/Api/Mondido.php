@@ -61,7 +61,7 @@ abstract class Mondido
 
         if (is_string($params)) {
             $url .= "/$params";
-        } else if (is_array($params)) {
+        } elseif (is_array($params)) {
             foreach ($params as $key => $value) {
                 if (is_numeric($key)) {
                     $url .= "/$value";
@@ -71,7 +71,7 @@ abstract class Mondido
             }
         }
 
-        if (sizeof($data)) {
+        if (count($data)) {
             if ($method != 'POST') {
                 $url .= '?' . http_build_query($data);
             } else {

@@ -27,6 +27,21 @@ use Magento\Framework\Event\Observer;
 class CustomerSaveObserver implements \Magento\Framework\Event\ObserverInterface
 {
     /**
+     * @var \Mondido\Mondido\Model\Api\Customer
+     */
+    protected $customerApi;
+
+    /**
+     * CustomerSaveObserver constructor.
+     *
+     * @param \Mondido\Mondido\Model\Api\Customer $customerApi
+     */
+    public function __construct(\Mondido\Mondido\Model\Api\Customer $customerApi)
+    {
+        $this->customerApi = $customerApi;
+    }
+
+    /**
      * Execute observer
      *
      * @param Observer $observer Observer object
@@ -35,17 +50,12 @@ class CustomerSaveObserver implements \Magento\Framework\Event\ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        // Fetch object manager
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-
-        // Fetch customer API
-        $customerApi = $objectManager->get('Mondido\Mondido\Model\Api\Customer');
 
         // Fetch customer object
         $customerObject = $observer->getCustomerDataObject();
 
         // Update or create the data
-        // $customerApi->handle($customerObject);
+        // $this->customerApi->handle($customerObject);
 
         return $observer;
     }

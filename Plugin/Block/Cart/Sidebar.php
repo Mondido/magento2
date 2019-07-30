@@ -47,7 +47,6 @@ class Sidebar
      *
      * @param \Magento\Checkout\Block\Cart\Sidebar $subject Checkout cart block
      * @param string                               $result  The original result from the method in $subject
-     * 
      * @return string
      */
     public function afterGetCheckoutUrl(\Magento\Checkout\Block\Cart\Sidebar $subject, $result)

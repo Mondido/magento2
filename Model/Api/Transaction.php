@@ -101,8 +101,9 @@ class Transaction extends Mondido
             'test' => $this->_config->isTest() ? 'test' : '',
             'secret' => $this->_config->getSecret()
         ];
-
+        //phpcs:disable
         $hash = md5(implode($hashRecipe));
+        //phpcs:enable
 
         return $hash;
     }
@@ -351,7 +352,9 @@ class Transaction extends Mondido
                 'artno' => $item->getSku(),
                 'description' => $item->getName(),
                 'qty' => $item->getQty(),
-                'amount' => $this->helper->formatNumber($item->getBaseRowTotalInclTax() - $item->getBaseDiscountAmount()),
+                'amount' => $this->helper->formatNumber(
+                    $item->getBaseRowTotalInclTax() - $item->getBaseDiscountAmount()
+                ),
                 'vat' => $this->helper->formatNumber($item->getTaxPercent()),
                 'discount' => $this->helper->formatNumber($item->getBaseDiscountAmount())
             ];
@@ -362,7 +365,9 @@ class Transaction extends Mondido
             $baseShippingAmount = $shippingAddress->getBaseShippingAmount();
 
             if ($baseShippingAmount > 0) {
-                $shippingVat = (1 - ($baseShippingAmount - $shippingAddress->getBaseShippingTaxAmount()) / $baseShippingAmount) * 100;
+                $shippingVat = (
+                    1 - ($baseShippingAmount - $shippingAddress->getBaseShippingTaxAmount()) / $baseShippingAmount
+                    ) * 100;
             } else {
                 $shippingVat = 0;
             }

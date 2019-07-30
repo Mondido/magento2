@@ -53,7 +53,9 @@ class TransactionTest extends \PHPUnit\Framework\TestCase
 
         $quoteRepositoryMock = $this->getMockBuilder('Magento\Quote\Api\CartRepositoryInterface')->getMock();
 
-        $shippingMethodManagementMock = $this->getMockBuilder('Magento\Quote\Model\ShippingMethodManagement')->disableOriginalConstructor()->getMock();
+        $shippingMethodManagementMock = $this->getMockBuilder('Magento\Quote\Model\ShippingMethodManagement')
+            ->disableOriginalConstructor()
+            ->getMock();
         $shippingMethodManagementMock->expects($this->once())
             ->method('getList')
             ->willReturn([]);
